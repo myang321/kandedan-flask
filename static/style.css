@@ -1,0 +1,18 @@
+.wrap {
+    width: 100%;
+    overflow: auto;
+}
+
+.fleft {
+    float: left;
+    width: 60%;
+    background: PowderBlue;
+    height: 400px;
+}
+
+.fright {
+    float: right;
+    width: 40%;
+    background: pink;
+    height: 400px;
+}
