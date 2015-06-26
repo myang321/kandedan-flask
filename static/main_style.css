@@ -7,12 +7,12 @@
     float: left;
     width: 60%;
     background: PowderBlue;
-    height: 400px;
+    height: 600px;
 }
 
 .fright {
     float: right;
     width: 40%;
     background: pink;
-    height: 400px;
+    height: 600px;
 }

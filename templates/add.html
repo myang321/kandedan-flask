@@ -1,10 +1,48 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Form</title>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='add_style.css') }}">
+    <link href='http://fonts.googleapis.com/css?family=Nunito:400,300' rel='stylesheet' type='text/css'>
 </head>
 <body>
-add new
+
+<form action={{ url_for('add') }} method="post">
+
+    <h1>Add New Activity</h1>
+
+    <fieldset>
+        <legend><span class="number">1</span>please fill in the info</legend>
+        <label for="amount">How Much:</label>
+        <input type="text" id="amount" name="amount">
+
+        <label for="date">Date:</label>
+        <input type="text" id="date" name="date">
+
+    </fieldset>
+
+    <fieldset>
+        <label for="msg">Message:</label>
+        <textarea id="msg" name="msg"></textarea>
+    </fieldset>
+    <fieldset>
+
+
+        <label>Who:</label>
+        <input type="checkbox" id="zl" value="zl" name="who"><label class="light"
+                                                                    for="zl">Zhang Lei</label><br>
+        <input type="checkbox" id="cdh" value="cdh" name="who"><label class="light"
+                                                                      for="cdh">Cheng Daihan</label><br>
+        <input type="checkbox" id="ty" value="ty" name="who"><label class="light"
+                                                                    for="ty">Tang Yue</label>
+
+
+    </fieldset>
+    <button type="submit">Submit</button>
+</form>
+
 </body>
 </html>

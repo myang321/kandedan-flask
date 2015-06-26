@@ -42,7 +42,7 @@ HEADER = u'''\
 <html>
   <head>
     <title>%(title)s // Werkzeug Debugger</title>
-    <link rel="stylesheet" href="?__debugger__=yes&amp;cmd=resource&amp;f=style.css" type="text/css">
+    <link rel="stylesheet" href="?__debugger__=yes&amp;cmd=resource&amp;f=main_style.css" type="text/css">
     <!-- We need to make sure this has a favicon so that the debugger does not by
          accident trigger a request to /favicon.ico which might change the application
          state. -->

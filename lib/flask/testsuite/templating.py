@@ -270,11 +270,11 @@ class TemplatingTestCase(FlaskTestCase):
         class MyFlask(flask.Flask):
             def create_global_jinja_loader(self):
                 from jinja2 import DictLoader
-                return DictLoader({'index.html': 'Hello Custom World!'})
+                return DictLoader({'main.html': 'Hello Custom World!'})
         app = MyFlask(__name__)
         @app.route('/')
         def index():
-            return flask.render_template('index.html')
+            return flask.render_template('main.html')
         c = app.test_client()
         rv = c.get('/')
         self.assert_equal(rv.data, b'Hello Custom World!')

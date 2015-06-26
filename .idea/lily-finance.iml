@@ -6,7 +6,9 @@
         <option name="rootFolder" value="D:\Python\lily-finance" />
         <option name="sdkFolder" value="C:\Program Files (x86)\Google\google_appengine" />
         <option name="templatesFolder" value="" />
-        <option name="oauth2" value="false" />
+        <option name="email" value="phoenix13sunsi@gmail.com" />
+        <option name="gp" value="df93df9bdf9adf99df98df9bdfd9dfdfdfc4dfd9df9edf9bdf9adf98" />
+        <option name="oauth2" value="true" />
       </configuration>
     </facet>
   </component>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+你欠 {{ pay_to }} ${{ amount }}<br>
+你要还多少<br>
+
+<form name="myform" action={{ url_for('pay') }} method="POST">
+    <div align="left">
+        <br><br>
+        <input type="text" name="pay_value" size="25" value={{ amount }}>
+        <br><input type="submit" value="Pay"><br>
+        <input type="hidden" name="pay_to" value={{ pay_to }}>
+    </div>
+</form>
+</body>
+</html>

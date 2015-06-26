@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='main_style.css') }}">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="wrap">
+    <div>
+        {% if session.get('name') %}
+            Welcome <strong> {{ session['name'] }}</strong><br>
+        {% endif %}
+    </div>
+    <div class="fleft">
+        <a href={{ url_for('add') }}>
+            <button>add new transaction</button>
+        </a>
+        {% for row in rows %}
+            <div>
+                Name:{{ row[1] }}<br>
+                Action:{{ row[2] }}<br>
+                Message:
+                {% for i in row[3].split('----') %}
+                    {{ i }}<br>
+                {% endfor %}
+                ${{ row[4] }}<br>
+                Date:{{ row[5] }}<br><br>
+                <hr>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="fright">
+        <a href={{ url_for('logout') }}>
+            <button>logout</button>
+        </a>
+        {% for item in list %}
+            <div>
+                <hr>
+                <h2>{{ item[0] }}</h2>
+                {% for j in item[1] %}
+                    <div>欠{{ j[0] }} {{ j[1] }}
+                        {% if j[1]>0 %}
+                            <a href={{ url_for('pay',pay_to=j[0]) }}>
+                                <button>pay</button>
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <hr>
+    </div>
+</div>
+</body>
+</html>
