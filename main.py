@@ -1,7 +1,6 @@
 from flask import Flask, render_template, redirect, request, session, url_for, g
 import database_setup as db
 import datetime
-import sae_setup
 
 app = Flask(__name__)
 app.debug = True
@@ -10,13 +9,7 @@ app.secret_key = 'F12Zr47j3yXR~X@H!jmM]Lwf/,?KT'
 
 @app.before_request
 def before_request():
-    SAE = 0
-    if SAE == 0:
-        # for local
-        g.db = db.conn()
-    else:
-        # for SAE
-        g.db = sae_setup.sae_conn()
+    g.db = db.conn()
 
 
 @app.teardown_request

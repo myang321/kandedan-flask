@@ -33,7 +33,15 @@ class Transaction:
 
 
 def conn():
-    con1 = mdb.connect(host="127.0.0.1", user="root", passwd="123", db="lily", port=3309)
+    try:
+        # for SAE
+        from sae.const import (MYSQL_HOST, MYSQL_HOST_S, MYSQL_PORT, MYSQL_USER, MYSQL_PASS, MYSQL_DB)
+
+        con1 = mdb.connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, port=int(MYSQL_PORT))
+    except ImportError:
+        # for local
+        print "ImportError  No SAE"
+        con1 = mdb.connect(host="127.0.0.1", user="root", passwd="123", db="lily", port=3309)
     return con1
 
 
