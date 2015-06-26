@@ -94,7 +94,7 @@ def change_balance(con, creditor, debtor, amount, trans_id):
         update_balance(con, debtor, creditor, remain)
         msg = "{0} owe {1} from ${2} to ${3}".format(creditor, debtor, current2, remain)
         print creditor, "owe", debtor, "from $", current2, "to $", remain
-    elif current > amount:
+    elif current >= amount:
         remain = current - amount
         update_balance(con, creditor, debtor, remain)
         msg = "{0} owe {1} from ${2} to ${3}".format(debtor, creditor, current, remain)
