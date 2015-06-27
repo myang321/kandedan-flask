@@ -52,12 +52,18 @@ def add():
         date = request.form['date']
         msg = request.form['msg']
         who = request.form.getlist('who')
-        print amount, date, msg, who
-        trans = db.Transaction(session['name'], amount, date, msg, who, "buy")
+        counts = []
+        who_tuple_list = []
+        for u in who:
+            cnt = int(request.form['cnt' + u])
+            tuple1 = (u, cnt)
+            who_tuple_list.append(tuple1)
+        trans = db.Transaction(session['name'], amount, date, msg, who_tuple_list, "buy")
         db.save_transaction(g.db, trans, session.get('name'))
         return redirect(url_for('main'))
     else:
-        return render_template('add.html')
+        list1 = db.get_all_normal_user_info(g.db)
+        return render_template('add.html', list=list1)
 
 
 @app.route('/logout/')
@@ -74,7 +80,8 @@ def pay():
         pay_value = float(request.form['pay_value'])
         pay_to = request.form['pay_to']
         now = datetime.datetime.now()
-        trans = db.Transaction(session['name'], amount=pay_value, date=str(now), message="", who=pay_to, type1="pay")
+        trans = db.Transaction(session['name'], amount=pay_value, date=str(now), message="", who=pay_to,
+                               type1="pay")
         db.save_transaction(g.db, trans, session.get('name'))
         return redirect(url_for('main'))
     else:

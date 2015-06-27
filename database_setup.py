@@ -12,23 +12,28 @@ LINE_SEPARATOR = "----"
 
 
 class Transaction:
-    def __init__(self, owner, amount, date, message, who, type1):
+    def __init__(self, owner, amount, date, message, who, type1, ):
         self.owner = owner
         self.amount = amount
         self.date = date
         self.message = message
+        # if type ==pay, its just a name, if type == buy, its a tuple list
         self.who = who
         self.type = type1
         self.ts = get_timestamp()
         if type1 == 'buy':
-            self.amount_per_each = self.amount / len(self.who)
-            str1 = LINE_SEPARATOR + " shared with "
+            sum1 = 0
             cnt = 0
-            for i in who:
+            str1 = LINE_SEPARATOR + " shared with "
+            for u in self.who:
+                sum1 += u[1]
                 if cnt > 0:
                     str1 += ","
-                str1 += i
+                str1 += u[0]
+                if u[1] > 1:
+                    str1 += "*" + str(u[1])
                 cnt += 1
+            self.amount_per_unit = self.amount / sum1
             self.message += str1
 
 
@@ -67,15 +72,18 @@ def save_transaction(con, trans, username):
     cursor.execute(sql)
     con.commit()
     if trans.type == 'buy':
-        for debtor in trans.who:
-            if debtor == username:
-                continue
+        for u in trans.who:
+            debtor = u[0]
+            cnt = u[1]
+            indi_amount = trans.amount_per_unit * cnt
             sql = "insert into trans_detail ( trans_id,debtor,amount) values({0},'{1}',{2})".format(trans.ts,
                                                                                                     debtor,
-                                                                                                    trans.amount_per_each)
+                                                                                                    indi_amount)
             cursor.execute(sql)
             con.commit()
-            change_balance(con, debtor, username, trans.amount_per_each, trans.ts)
+            if debtor == username:
+                continue
+            change_balance(con, debtor, username, indi_amount, trans.ts)
     elif trans.type == 'pay':
         change_balance(con, trans.who, username, trans.amount, trans.ts)
     print "transaction saved"
@@ -124,6 +132,7 @@ def user_authentication(con, username, password):
     return result
 
 
+# only return username
 def get_all_normal_users(con):
     cursor = con.cursor()
     sql = "SELECT username from users where type='normal'"
@@ -133,6 +142,15 @@ def get_all_normal_users(con):
     for i in result:
         array.append(i[0])
     return array
+
+
+# TODO change it to dic
+def get_all_normal_user_info(con):
+    cursor = con.cursor()
+    sql = "SELECT username,screen_name from users where type='normal'"
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    return result
 
 
 def get_creditor_debtor_list(con):
