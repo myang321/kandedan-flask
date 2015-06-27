@@ -4,6 +4,10 @@ __author__ = 'Steve'
 
 import MySQLdb as mdb
 import time
+import sys
+
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 TRANSACTION_TABLE = "transaction"
 BALANCE_TABLE = "balance"

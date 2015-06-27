@@ -52,7 +52,6 @@ def add():
         date = request.form['date']
         msg = request.form['msg']
         who = request.form.getlist('who')
-        counts = []
         who_tuple_list = []
         for u in who:
             cnt = int(request.form['cnt' + u])
