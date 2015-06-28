@@ -1,0 +1,11 @@
+.header {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    min-width: 1000px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #e5e5e5
+}
+
+div {
+    display: block;
+}
