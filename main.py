@@ -89,3 +89,6 @@ def pay():
         return render_template('pay.html', pay_to=pay_to, amount=amount)
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
