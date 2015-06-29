@@ -1,6 +1,10 @@
 __author__ = 'Steve'
 
-from main import app
 
-if __name__ == '__main__':
-    app.run()
+LOCAL_HOST = '127.0.0.1'
+LOCAL_USERNAME = 'root'
+LOCAL_PASSWD = '123'
+LOCAL_DB_NAME = 'LILY'
+LOCAL_PORT = 3309
+
+
