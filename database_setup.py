@@ -5,7 +5,7 @@ __author__ = 'Steve'
 import MySQLdb as mdb
 import time
 import sys
-from local import *
+
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -51,6 +51,8 @@ def conn():
         con1 = mdb.connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, port=int(MYSQL_PORT))
     except ImportError:
         # for local
+        from local import *
+
         print "ImportError  No SAE"
         con1 = mdb.connect(host=LOCAL_HOST, user=LOCAL_USERNAME, passwd=LOCAL_PASSWD, db=LOCAL_DB_NAME, port=LOCAL_PORT)
     return con1
