@@ -9,12 +9,14 @@ except ImportError:
 import time
 import sys
 
+
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
 TRANSACTION_TABLE = "transaction"
 BALANCE_TABLE = "balance"
 TRANS_DETAIL_TABLE = "trans_detail"
+USER_TABLE = "users"
 LINE_SEPARATOR = "----"
 
 
@@ -52,8 +54,11 @@ def conn():
         con1 = mdb.connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, port=int(MYSQL_PORT))
     except ImportError:
         # for local
+        from local import *
+
         print "ImportError  No SAE"
-        con1 = mdb.connect(host="127.0.0.1", user="root", passwd="", db="lily", port=3306)
+
+        con1 = mdb.connect(host=LOCAL_HOST, user=LOCAL_USERNAME, passwd=LOCAL_PASSWD, db=LOCAL_DB_NAME, port=LOCAL_PORT)
     return con1
 
 

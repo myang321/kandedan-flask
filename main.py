@@ -89,6 +89,7 @@ def pay():
         return render_template('pay.html', pay_to=pay_to, amount=amount)
 
 
+
 @app.route('/signup/',methods=['GET','POST'])
 def signup():
     if request.method=='POST':
@@ -100,6 +101,14 @@ def signup():
          db.add_user(g.db,username,password,screenname)
          return redirect(url_for('login'))
     else:
-        return render_template('signup.html')
+        return render_template('signUp.html')
 
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+if __name__ == '__main__':
+    app.run()
 

@@ -1,6 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/sql/lily_6-25-2_data_clear.sql" dialect="MySQL" />
-  </component>
-</project>
+<project version="4" />
