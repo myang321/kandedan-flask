@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, session, url_for, g
+from flask import Flask, render_template, redirect, request, session, url_for, g, flash
 import database_setup as db
 import datetime
 
@@ -29,6 +29,8 @@ def login():
             session['name'] = username
             return redirect(url_for('main'))
         else:
+            flash("username or password not correct")
+            print "login failed"
             return render_template('login.html')
     else:
         return render_template('login.html')
@@ -92,6 +94,7 @@ def pay():
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
+
 
 if __name__ == '__main__':
     app.run()
