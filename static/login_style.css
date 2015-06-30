@@ -260,6 +260,6 @@ form button:hover {
     }
 }
 
-p {
+.failmsg {
     color: red;
 }
