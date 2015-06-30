@@ -2,7 +2,10 @@ from __future__ import division
 
 __author__ = 'Steve'
 
-import MySQLdb as mdb
+try:
+    import MySQLdb as mdb
+except ImportError:
+    import pymysql as mdb
 import time
 import sys
 
@@ -50,7 +53,7 @@ def conn():
     except ImportError:
         # for local
         print "ImportError  No SAE"
-        con1 = mdb.connect(host="127.0.0.1", user="root", passwd="123", db="lily", port=3309)
+        con1 = mdb.connect(host="127.0.0.1", user="root", passwd="", db="lily", port=3306)
     return con1
 
 
@@ -185,6 +188,39 @@ def append_transaction_message(con, trans_id, message):
     cursor.execute(sql)
     con.commit()
 
+def is_user_exist(con,user_name):
+    cursor=con.cursor()
+    sql="select username from users WHERE username='{0}'".format(user_name)
+    cursor.execute(sql)
+    result=cursor.fetchone()
+    if result==None:
+        return False
+    else:
+        return True
+
+def add_user(con,user_name,password,screen_name):
+    cursor=con.cursor()
+    sql="insert into users (username,password,screen_name,type) values ('{0}','{1}','{2}','normal')".format(user_name,
+    password,screen_name)
+    cursor.execute(sql)
+    con.commit()
+    add_newuser_balance(con,user_name)
+
+def add_newuser_balance(con,user_name):
+    cursor=con.cursor()
+    sql="select username from users WHERE type='normal' and username!='{0}'".format(user_name)
+    print sql
+    cursor.execute(sql)
+    result=cursor.fetchall()
+    for row in result:
+        sql1="insert into balance VALUES ('{0}','{1}',0)".format(user_name,row[0])
+        print sql1
+        sql2="insert into balance VALUES ('{0}','{1}',0)".format(row[0],user_name)
+        cursor.execute(sql1)
+        cursor.execute(sql2)
+    con.commit()
+
+
 
 if __name__ == "__main__":
     con = conn()
@@ -192,6 +228,9 @@ if __name__ == "__main__":
     # r = user_authentication(con, 'zl', '123')
     # r = get_all_normal_users(con)
     # print r == None
+    #print is_user_exist(con,'zl')
+    #add_user(con,'meng','123','pig')
+    #add_newuser_balance(con,'meng')
     list = get_creditor_debtor_list(con)
     # print r
     for item in list:

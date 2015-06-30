@@ -89,3 +89,17 @@ def pay():
         return render_template('pay.html', pay_to=pay_to, amount=amount)
 
 
+@app.route('/signup/',methods=['GET','POST'])
+def signup():
+    if request.method=='POST':
+         print "in signup post"
+         username=request.form['username']
+         password=request.form['password']
+         screenname=request.form['screenname']
+         print username,password,screenname
+         db.add_user(g.db,username,password,screenname)
+         return redirect(url_for('login'))
+    else:
+        return render_template('signup.html')
+
+
