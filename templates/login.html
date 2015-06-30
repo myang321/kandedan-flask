@@ -21,8 +21,10 @@
             {% endwith %}
             <input type="text" name="username" placeholder="Username">
             <input type="password" name="password" placeholder="Password">
+
             <button type="submit" id="login-button">Login</button>
         </form>
+        <p><a href={{ url_for("signup")  }}><button id="signUp-button">SignUp</button></a></p>
     </div>
 
     <ul class="bg-bubbles">
