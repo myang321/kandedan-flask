@@ -66,9 +66,13 @@ def get_timestamp():
     return long(time.time() * 100)
 
 
-def get_all_transaction(con):
+def get_all_transaction(con, group_id=None):
     cursor = con.cursor()
-    sql = "select * from {0} order by id desc".format(TRANSACTION_TABLE)
+    if group_id == None:
+        sql = "select * from {0} order by id desc".format(TRANSACTION_TABLE)
+    else:
+        sql = "select * from {0} where username in (select username from users where group_id={1}) order by id desc".format(
+            TRANSACTION_TABLE, group_id)
     cursor.execute(sql)
     rows = cursor.fetchall()
     return rows
@@ -138,16 +142,20 @@ def update_balance(con, creditor, debtor, amount):
 
 def user_authentication(con, username, password):
     cursor = con.cursor()
-    sql = "select username from users where username='{0}' and password='{1}' ".format(username, password)
+    sql = "select screen_name,group_id from users where username='{0}' and password='{1}' ".format(username,
+                                                                                                   password)
     cursor.execute(sql)
     result = cursor.fetchone()
     return result
 
 
 # only return username
-def get_all_normal_users(con):
+def get_all_normal_users(con, group_id=None):
     cursor = con.cursor()
-    sql = "SELECT username from users where type='normal'"
+    if group_id == None:
+        sql = "SELECT username from {0} where type='normal'".format(USER_TABLE)
+    else:
+        sql = "SELECT username from {0} where type='normal' and group_id={1}".format(USER_TABLE, group_id)
     cursor.execute(sql)
     result = cursor.fetchall()
     array = []
@@ -157,20 +165,27 @@ def get_all_normal_users(con):
 
 
 # TODO change it to dic
-def get_all_normal_user_info(con):
+def get_all_normal_user_info(con, group_id=None):
     cursor = con.cursor()
-    sql = "SELECT username,screen_name from users where type='normal'"
+    if group_id == None:
+        sql = "SELECT username,screen_name from {0} where type='normal'".format(USER_TABLE)
+    else:
+        sql = "SELECT username,screen_name from {0} where type='normal' and group_id={1}".format(USER_TABLE, group_id)
     cursor.execute(sql)
     result = cursor.fetchall()
     return result
 
 
-def get_creditor_debtor_list(con):
-    users = get_all_normal_users(con)
+def get_creditor_debtor_list(con, group_id=None):
+    users = get_all_normal_users(con, group_id)
     cursor = con.cursor()
     list1 = []
     for u in users:
-        sql = "select creditor,amount from balance where debtor='{0}'".format(u)
+        if group_id == None:
+            sql = "select creditor,amount from balance where debtor='{0}'".format(u)
+        else:
+            sql = "select creditor,amount from balance where debtor='{0}' and creditor in (select username from users where group_id={1})".format(
+                u, group_id)
         cursor.execute(sql)
         result = cursor.fetchall()
         tuple1 = (u, result)
@@ -193,38 +208,41 @@ def append_transaction_message(con, trans_id, message):
     cursor.execute(sql)
     con.commit()
 
-def is_user_exist(con,user_name):
-    cursor=con.cursor()
-    sql="select username from users WHERE username='{0}'".format(user_name)
+
+def is_user_exist(con, user_name):
+    cursor = con.cursor()
+    sql = "select username from users WHERE username='{0}'".format(user_name)
     cursor.execute(sql)
-    result=cursor.fetchone()
-    if result==None:
+    result = cursor.fetchone()
+    if result == None:
         return False
     else:
         return True
 
-def add_user(con,user_name,password,screen_name):
-    cursor=con.cursor()
-    sql="insert into users (username,password,screen_name,type) values ('{0}','{1}','{2}','normal')".format(user_name,
-    password,screen_name)
+
+def add_user(con, user_name, password, screen_name):
+    cursor = con.cursor()
+    sql = "insert into users (username,password,screen_name,type) values ('{0}','{1}','{2}','normal')".format(user_name,
+                                                                                                              password,
+                                                                                                              screen_name)
     cursor.execute(sql)
     con.commit()
-    add_newuser_balance(con,user_name)
+    add_newuser_balance(con, user_name)
 
-def add_newuser_balance(con,user_name):
-    cursor=con.cursor()
-    sql="select username from users WHERE type='normal' and username!='{0}'".format(user_name)
+
+def add_newuser_balance(con, user_name):
+    cursor = con.cursor()
+    sql = "select username from users WHERE type='normal' and username!='{0}'".format(user_name)
     print sql
     cursor.execute(sql)
-    result=cursor.fetchall()
+    result = cursor.fetchall()
     for row in result:
-        sql1="insert into balance VALUES ('{0}','{1}',0)".format(user_name,row[0])
+        sql1 = "insert into balance VALUES ('{0}','{1}',0)".format(user_name, row[0])
         print sql1
-        sql2="insert into balance VALUES ('{0}','{1}',0)".format(row[0],user_name)
+        sql2 = "insert into balance VALUES ('{0}','{1}',0)".format(row[0], user_name)
         cursor.execute(sql1)
         cursor.execute(sql2)
     con.commit()
-
 
 
 if __name__ == "__main__":
@@ -233,9 +251,9 @@ if __name__ == "__main__":
     # r = user_authentication(con, 'zl', '123')
     # r = get_all_normal_users(con)
     # print r == None
-    #print is_user_exist(con,'zl')
-    #add_user(con,'meng','123','pig')
-    #add_newuser_balance(con,'meng')
+    # print is_user_exist(con,'zl')
+    # add_user(con,'meng','123','pig')
+    # add_newuser_balance(con,'meng')
     list = get_creditor_debtor_list(con)
     # print r
     for item in list:

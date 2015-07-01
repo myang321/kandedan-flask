@@ -25,8 +25,11 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if db.user_authentication(g.db, username, password) != None:
+        result = db.user_authentication(g.db, username, password)
+        if result != None:
             session['name'] = username
+            session['screen_name'] = result[0]
+            session['group_id'] = result[1]
             return redirect(url_for('main'))
         else:
             flash("username or password not correct")
@@ -40,11 +43,12 @@ def login():
 def main():
     if not session.get('name'):
         return redirect(url_for('login'))
-    rows1 = db.get_all_transaction(g.db)
-    list1 = db.get_creditor_debtor_list(g.db)
+    rows1 = db.get_all_transaction(g.db, session['group_id'])
+    list1 = db.get_creditor_debtor_list(g.db, session['group_id'])
     return render_template('main.html', rows=rows1, list=list1)
 
 
+# add transaction
 @app.route('/add/', methods=['GET', 'POST'])
 def add():
     if not session.get('name'):
@@ -63,7 +67,7 @@ def add():
         db.save_transaction(g.db, trans, session.get('name'))
         return redirect(url_for('main'))
     else:
-        list1 = db.get_all_normal_user_info(g.db)
+        list1 = db.get_all_normal_user_info(g.db, session['group_id'])
         return render_template('add.html', list=list1)
 
 
@@ -91,20 +95,17 @@ def pay():
         return render_template('pay.html', pay_to=pay_to, amount=amount)
 
 
-
-@app.route('/signup/',methods=['GET','POST'])
+@app.route('/signup/', methods=['GET', 'POST'])
 def signup():
-    if request.method=='POST':
-         print "in signup post"
-         username=request.form['username']
-         password=request.form['password']
-         screenname=request.form['screenname']
-         print username,password,screenname
-         db.add_user(g.db,username,password,screenname)
-         return redirect(url_for('login'))
+    if request.method == 'POST':
+        print "in signup post"
+        username = request.form['username']
+        password = request.form['password']
+        screen_name = request.form['screenname']
+        db.add_user(g.db, username, password, screen_name)
+        return redirect(url_for('login'))
     else:
         return render_template('signUp.html')
-
 
 
 @app.errorhandler(404)
