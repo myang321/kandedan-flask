@@ -19,11 +19,13 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-            <input type="text" name="username" placeholder="Username">
-            <input type="password" name="password" placeholder="Password">
+            <input type="text" name="username" required placeholder="Username">
+            <input type="password" name="password" required placeholder="Password">
 
             <button type="submit" id="login-button">Login</button>
-            <a href={{ url_for("signup") }}><button type="button"  id="signUp-button">SignUp</button></a>
+            <a href={{ url_for("signup") }}>
+                <button type="button" id="signUp-button">SignUp</button>
+            </a>
         </form>
     </div>
 
