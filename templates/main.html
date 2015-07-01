@@ -33,7 +33,7 @@
                     <a class="page-scroll" href="#page-top"></a>
                 </li>
                 <li>
-                    <a class="page-scroll">Welcome <strong> {{ session['name'] }}</strong></a>
+                    <a class="page-scroll">Welcome <strong> {{ session['screen_name'] }}</strong></a>
                 </li>
                 <li>
                     <a class="page-scroll" href={{ url_for('add') }}>Add New Activity</a>
@@ -64,7 +64,7 @@
                         <tr class="even">
                     {% endif %}
 
-                <td>{{ row[1] }}</td>
+                <td>{{ row[6] }}</td>
                 <td>{{ row[5] }}</td>
                 <td>
                     {% for i in row[3].split('----') %}
@@ -83,9 +83,9 @@
             {% for item in list %}
                 <div>
                     <hr>
-                    <h2>{{ item[0] }}</h2>
+                    <h2>{{ item[2] }}</h2>
                     {% for j in item[1] %}
-                        <div>欠{{ j[0] }} ${{ j[1] }}
+                        <div>欠{{ j[2] }} ${{ j[1] }}
                             {% if j[1]>0 and session.get('name')==item[0] %}
                                 <a href={{ url_for('pay',pay_to=j[0]) }}>
                                     <button>pay</button>

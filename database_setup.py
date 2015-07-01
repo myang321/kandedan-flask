@@ -38,7 +38,7 @@ class Transaction:
                 sum1 += u[1]
                 if cnt > 0:
                     str1 += ","
-                str1 += u[0]
+                str1 += u[2]
                 if u[1] > 1:
                     str1 += "*" + str(u[1])
                 cnt += 1
@@ -75,7 +75,12 @@ def get_all_transaction(con, group_id=None):
             TRANSACTION_TABLE, group_id)
     cursor.execute(sql)
     rows = cursor.fetchall()
-    return rows
+    dic1 = get_all_normal_user_info(con)
+    lists = [list(row) for row in rows]
+    # append screen name to the result tuple
+    for row in lists:
+        row.append(dic1[row[1]])
+    return lists
 
 
 def save_transaction(con, trans, username):
@@ -111,23 +116,25 @@ def save_transaction(con, trans, username):
 def change_balance(con, creditor, debtor, amount, trans_id):
     current = get_balance(con, creditor, debtor)
     current2 = get_balance(con, debtor, creditor)
+    creditor_name = get_screen_name(con, creditor)
+    debtor_name = get_screen_name(con, debtor)
     print ""
     print debtor, "paid $", amount, "to", creditor
     if current == 0:
         remain = current2 + amount
         update_balance(con, debtor, creditor, remain)
-        msg = "{0} owe {1} from ${2} to ${3}".format(creditor, debtor, current2, remain)
+        msg = "{0} owe {1} from ${2:.2f} to ${3:.2f}".format(creditor_name, debtor_name, current2, remain)
         print creditor, "owe", debtor, "from $", current2, "to $", remain
     elif current >= amount:
         remain = current - amount
         update_balance(con, creditor, debtor, remain)
-        msg = "{0} owe {1} from ${2} to ${3}".format(debtor, creditor, current, remain)
+        msg = "{0} owe {1} from ${2:.2f} to ${3:.2f}".format(debtor_name, creditor_name, current, remain)
         print debtor, "owe", creditor, "from $", current, "to $", remain
     else:
         remain = amount - current
         update_balance(con, creditor, debtor, 0)
         update_balance(con, debtor, creditor, remain)
-        msg = "{0} owe {1} from ${2} to ${3}".format(creditor, debtor, -current, remain)
+        msg = "{0} owe {1} from ${2:.2f} to ${3:.2f}".format(creditor_name, debtor_name, -current, remain)
         print creditor, "owe", debtor, "from $", -current, "to $", remain
     append_transaction_message(con, trans_id, msg)
 
@@ -164,7 +171,6 @@ def get_all_normal_users(con, group_id=None):
     return array
 
 
-# TODO change it to dic
 def get_all_normal_user_info(con, group_id=None):
     cursor = con.cursor()
     if group_id == None:
@@ -173,13 +179,17 @@ def get_all_normal_user_info(con, group_id=None):
         sql = "SELECT username,screen_name from {0} where type='normal' and group_id={1}".format(USER_TABLE, group_id)
     cursor.execute(sql)
     result = cursor.fetchall()
-    return result
+    dic1 = {}
+    for row in result:
+        dic1[row[0]] = row[1]
+    return dic1
 
 
 def get_creditor_debtor_list(con, group_id=None):
     users = get_all_normal_users(con, group_id)
     cursor = con.cursor()
     list1 = []
+    dic1 = get_all_normal_user_info(con, group_id)
     for u in users:
         if group_id == None:
             sql = "select creditor,amount from balance where debtor='{0}'".format(u)
@@ -188,7 +198,10 @@ def get_creditor_debtor_list(con, group_id=None):
                 u, group_id)
         cursor.execute(sql)
         result = cursor.fetchall()
-        tuple1 = (u, result)
+        result2 = [list(row) for row in result]
+        for row in result2:
+            row.append(dic1[row[0]])
+        tuple1 = (u, result2, dic1[u])
         list1.append(tuple1)
     return list1
 
@@ -238,26 +251,24 @@ def add_newuser_balance(con, user_name):
     result = cursor.fetchall()
     for row in result:
         sql1 = "insert into balance VALUES ('{0}','{1}',0)".format(user_name, row[0])
-        print sql1
         sql2 = "insert into balance VALUES ('{0}','{1}',0)".format(row[0], user_name)
         cursor.execute(sql1)
         cursor.execute(sql2)
     con.commit()
 
 
+def get_screen_name(con, username):
+    cursor = con.cursor()
+    sql = "select screen_name from {0} where username='{1}'".format(USER_TABLE, username)
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    name = result[0]
+    return name
+
+
 if __name__ == "__main__":
     con = conn()
-    # get_all_transaction(con)
-    # r = user_authentication(con, 'zl', '123')
-    # r = get_all_normal_users(con)
-    # print r == None
-    # print is_user_exist(con,'zl')
-    # add_user(con,'meng','123','pig')
-    # add_newuser_balance(con,'meng')
-    list = get_creditor_debtor_list(con)
-    # print r
-    for item in list:
-        print item[0]
-        for j in item[1]:
-            print j[0], j[1]
-        print ""
+    result = get_creditor_debtor_list(con)
+    for r in result:
+        print r
+        # print result

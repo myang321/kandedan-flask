@@ -32,10 +32,10 @@
 
 
         <label>Who:</label>
-        {% for i in list %}
-            <input type="checkbox" id={{ i[0] }} value={{ i[0] }} name="who"><label class="light"
-                                                                                    for={{ i[0] }}>{{ i[1] }}</label>*
-            <input type="text" name={{ "cnt"+i[0] }} value="1">
+        {% for k,v in dic.iteritems() %}
+            <input type="checkbox" id={{ k }} value={{ k }} name="who"><label class="light"
+                                                                              for={{ k }}>{{ v }}</label>*
+            <input type="text" name={{ "cnt"+k }} value="1">
             <br>
         {% endfor %}
 

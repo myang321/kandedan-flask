@@ -59,16 +59,17 @@ def add():
         msg = request.form['msg']
         who = request.form.getlist('who')
         who_tuple_list = []
+        dic1 = db.get_all_normal_user_info(g.db, session['group_id'])
         for u in who:
             cnt = int(request.form['cnt' + u])
-            tuple1 = (u, cnt)
+            tuple1 = (u, cnt, dic1[u])
             who_tuple_list.append(tuple1)
         trans = db.Transaction(session['name'], amount, date, msg, who_tuple_list, "buy")
         db.save_transaction(g.db, trans, session.get('name'))
         return redirect(url_for('main'))
     else:
-        list1 = db.get_all_normal_user_info(g.db, session['group_id'])
-        return render_template('add.html', list=list1)
+        dic = db.get_all_normal_user_info(g.db, session['group_id'])
+        return render_template('add.html', dic=dic)
 
 
 @app.route('/logout/')
@@ -92,7 +93,8 @@ def pay():
     else:
         pay_to = request.args.get('pay_to')
         amount = db.get_balance(g.db, pay_to, session.get('name'))
-        return render_template('pay.html', pay_to=pay_to, amount=amount)
+        pay_to_name = db.get_screen_name(g.db, pay_to)
+        return render_template('pay.html', pay_to=pay_to, amount=amount, pay_to_name=pay_to_name)
 
 
 @app.route('/signup/', methods=['GET', 'POST'])
