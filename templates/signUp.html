@@ -12,6 +12,13 @@ Developed by @mrjopino
 -->
 <p class="texto">Register</p>
 <div class="Register">
+    {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="failmsg"> {{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 <form class="form" method="post" action={{ url_for("signup") }}>
 
 <span class="fontawesome-user"></span><input type="text" required placeholder="用户名" name="username" id="username" autocomplete="off">

@@ -104,7 +104,13 @@ def signup():
         username = request.form['username']
         password = request.form['password']
         screen_name = request.form['screenname']
-        db.add_user(g.db, username, password, screen_name)
+        if db.is_user_exist(g.db,username)==True:
+            flash("this user name has been used")
+            return render_template('signUp.html')
+
+        else:
+            flash("sign up successfully")
+            db.add_user(g.db, username, password, screen_name)
         return redirect(url_for('login'))
     else:
         return render_template('signUp.html')
