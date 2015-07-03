@@ -83,6 +83,8 @@ def pay():
     if not session.get('name'):
         return redirect(url_for('login'))
     if request.method == 'POST':
+        if not request.form['pay_value'].isnumeric():
+            return render_template('main.html')
         pay_value = float(request.form['pay_value'])
         pay_to = request.form['pay_to']
         now = datetime.datetime.now()
