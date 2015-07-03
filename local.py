@@ -3,8 +3,8 @@ __author__ = 'Steve'
 
 LOCAL_HOST = '127.0.0.1'
 LOCAL_USERNAME = 'root'
-LOCAL_PASSWD = '123'
-LOCAL_DB_NAME = 'LILY'
-LOCAL_PORT = 3309
+LOCAL_PASSWD = ''
+LOCAL_DB_NAME = 'lily'
+LOCAL_PORT = 3306
 
 
