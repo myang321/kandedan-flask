@@ -43,9 +43,14 @@ def login():
 def main():
     if not session.get('name'):
         return redirect(url_for('login'))
-    rows1 = db.get_all_transaction(g.db, session['group_id'])
-    list1 = db.get_creditor_debtor_list(g.db, session['group_id'])
-    return render_template('main.html', rows=rows1, list=list1)
+    rows1 = db.get_all_transaction(g.db, session.get('group_id'), session.get('name'))
+    list1 = None
+    not_in_group_msg = None
+    if session['group_id'] != 0:
+        list1 = db.get_creditor_debtor_list(g.db, session['group_id'])
+    else:
+        not_in_group_msg = "You are not in any group, please create or join a group in Setting page."
+    return render_template('main.html', rows=rows1, list=list1, not_in_group_msg=not_in_group_msg)
 
 
 # add transaction
@@ -59,7 +64,8 @@ def add():
         msg = request.form['msg']
         who = request.form.getlist('who')
         who_tuple_list = []
-        dic1 = db.get_all_normal_user_info(g.db, session['group_id'])
+        dic1 = db.get_all_normal_user_info(g.db, session.get('group_id'), session.get('name'))
+        print "add", dic1
         for u in who:
             cnt = int(request.form['cnt' + u])
             tuple1 = (u, cnt, dic1[u])
@@ -68,7 +74,7 @@ def add():
         db.save_transaction(g.db, trans, session.get('name'))
         return redirect(url_for('main'))
     else:
-        dic = db.get_all_normal_user_info(g.db, session['group_id'])
+        dic = db.get_all_normal_user_info(g.db, session.get('group_id'), session.get('name'))
         return render_template('add.html', dic=dic)
 
 
@@ -84,7 +90,7 @@ def pay():
         return redirect(url_for('login'))
     if request.method == 'POST':
         try:
-            pay_value= float(request.form['pay_value'])
+            pay_value = float(request.form['pay_value'])
         except ValueError:
             return redirect(url_for('main'))
         pay_to = request.form['pay_to']
@@ -107,7 +113,7 @@ def signup():
         username = request.form['username']
         password = request.form['password']
         screen_name = request.form['screenname']
-        if db.is_user_exist(g.db,username)==True:
+        if db.is_user_exist(g.db, username) == True:
             flash("this user name has been used")
             return render_template('signUp.html')
 

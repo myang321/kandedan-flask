@@ -66,10 +66,12 @@ def get_timestamp():
     return long(time.time() * 100)
 
 
-def get_all_transaction(con, group_id=None):
+def get_all_transaction(con, group_id=None, username=None):
     cursor = con.cursor()
     if group_id == None:
         sql = "select * from {0} order by id desc".format(TRANSACTION_TABLE)
+    elif group_id == 0:
+        sql = "select * from {0} where username='{1}' order by id desc".format(TRANSACTION_TABLE, username)
     else:
         sql = "select * from {0} where username in (select username from users where group_id={1}) order by id desc".format(
             TRANSACTION_TABLE, group_id)
@@ -171,10 +173,13 @@ def get_all_normal_users(con, group_id=None):
     return array
 
 
-def get_all_normal_user_info(con, group_id=None):
+def get_all_normal_user_info(con, group_id=None, username=None):
     cursor = con.cursor()
     if group_id == None:
         sql = "SELECT username,screen_name from {0} where type='normal'".format(USER_TABLE)
+    elif group_id == 0:
+        sql = "SELECT username,screen_name from {0} where username='{1}'".format(USER_TABLE, username)
+        print sql
     else:
         sql = "SELECT username,screen_name from {0} where type='normal' and group_id={1}".format(USER_TABLE, group_id)
     cursor.execute(sql)
@@ -246,14 +251,11 @@ def add_user(con, user_name, password, screen_name):
 def add_newuser_balance(con, user_name):
     cursor = con.cursor()
     sql = "select username from users WHERE type='normal' and username!='{0}'".format(user_name)
-    # print sql
     cursor.execute(sql)
     result = cursor.fetchall()
     for row in result:
         sql1 = "insert into balance VALUES ('{0}','{1}',0)".format(user_name, row[0])
         sql2 = "insert into balance VALUES ('{0}','{1}',0)".format(row[0], user_name)
-        print sql1
-        print sql2
         cursor.execute(sql1)
         cursor.execute(sql2)
     con.commit()
