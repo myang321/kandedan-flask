@@ -12,10 +12,19 @@ Developed by @mrjopino
 -->
 <p class="texto">Register</p>
 <div class="Register">
+    {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="failmsg"> {{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 <form class="form" method="post" action={{ url_for("signup") }}>
 
-<span class="fontawesome-user"></span><input type="text" required placeholder="用户名" name="username" id="username" autocomplete="off">
-<span class="fontawesome-user"></span><input type="text" required  id="screenname" name="screenname" placeholder="昵称" autocomplete="off">
+<span class="fontawesome-user"></span><input type="text" required placeholder="用户名" name="username" id="username" autocomplete="off"
+                                             value="{{ request.form['username'] }}">
+<span class="fontawesome-user"></span><input type="text" required  id="screenname" name="screenname" placeholder="昵称"
+                                             autocomplete="off" value="{{ request.form['screenname'] }}">
 <span class="fontawesome-lock"></span><input type="password" name="password" id="password" required placeholder="密码" autocomplete="off">
 {#    <span class="fontawesome-lock"></span><input type="password" name="repeat password" required  autocomplete="off">#}
 			<input type="submit" value="Register" title="Registra tu cuenta">

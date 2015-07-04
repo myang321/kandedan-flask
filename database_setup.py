@@ -246,12 +246,14 @@ def add_user(con, user_name, password, screen_name):
 def add_newuser_balance(con, user_name):
     cursor = con.cursor()
     sql = "select username from users WHERE type='normal' and username!='{0}'".format(user_name)
-    print sql
+    # print sql
     cursor.execute(sql)
     result = cursor.fetchall()
     for row in result:
         sql1 = "insert into balance VALUES ('{0}','{1}',0)".format(user_name, row[0])
         sql2 = "insert into balance VALUES ('{0}','{1}',0)".format(row[0], user_name)
+        print sql1
+        print sql2
         cursor.execute(sql1)
         cursor.execute(sql2)
     con.commit()

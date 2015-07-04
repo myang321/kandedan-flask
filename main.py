@@ -83,7 +83,10 @@ def pay():
     if not session.get('name'):
         return redirect(url_for('login'))
     if request.method == 'POST':
-        pay_value = float(request.form['pay_value'])
+        try:
+            pay_value= float(request.form['pay_value'])
+        except ValueError:
+            return redirect(url_for('main'))
         pay_to = request.form['pay_to']
         now = datetime.datetime.now()
         trans = db.Transaction(session['name'], amount=pay_value, date=str(now), message="", who=pay_to,
@@ -104,7 +107,13 @@ def signup():
         username = request.form['username']
         password = request.form['password']
         screen_name = request.form['screenname']
-        db.add_user(g.db, username, password, screen_name)
+        if db.is_user_exist(g.db,username)==True:
+            flash("this user name has been used")
+            return render_template('signUp.html')
+
+        else:
+            flash("sign up successfully")
+            db.add_user(g.db, username, password, screen_name)
         return redirect(url_for('login'))
     else:
         return render_template('signUp.html')
