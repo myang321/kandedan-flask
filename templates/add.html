@@ -17,7 +17,7 @@
     <fieldset>
         <legend><span class="number">1</span>please fill in the info</legend>
         <label for="amount">How Much:</label>
-        <input type="text" id="amount" name="amount">
+        <input type="number" step="0.01" min='0' id="amount" name="amount" required>
 
         <label for="date">Date:</label>
         <input type="text" id="date" name="date">
@@ -26,7 +26,7 @@
 
     <fieldset>
         <label for="msg">Message:</label>
-        <textarea id="msg" name="msg"></textarea>
+        <textarea id="msg" name="msg" required></textarea>
     </fieldset>
     <fieldset>
 
