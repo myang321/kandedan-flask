@@ -119,6 +119,16 @@ def signup():
         return render_template('signUp.html')
 
 
+@app.route('/setting/', methods=['GET', 'POST'])
+def setting():
+    if not session.get('name'):
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        pass
+    else:
+        return render_template('setting.html')
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
