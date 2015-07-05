@@ -87,11 +87,11 @@ def get_all_transaction(con, group_id=None, username=None):
 
 def save_transaction(con, trans, username):
     cursor = con.cursor()
-    sql = "insert into transaction values('{0}' ,  '{1}' , '{2}' , '{3}' ,  {4} , '{5}')".format(trans.ts, username,
-                                                                                                 trans.type,
-                                                                                                 trans.message,
-                                                                                                 trans.amount,
-                                                                                                 trans.date)
+    sql = "insert into transaction values({0} ,  '{1}' , '{2}' , '{3}' ,  {4} , '{5}')".format(trans.ts, username,
+                                                                                               trans.type,
+                                                                                               trans.message,
+                                                                                               trans.amount,
+                                                                                               trans.date)
     cursor.execute(sql)
     con.commit()
     if trans.type == 'buy':
