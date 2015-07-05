@@ -56,6 +56,8 @@ def main():
 # add transaction
 @app.route('/add/', methods=['GET', 'POST'])
 def add():
+    now=datetime.datetime.now()
+    now=now.strftime("%Y-%m-%d")
     if not session.get('name'):
         return redirect(url_for('login'))
     if request.method == 'POST':
@@ -75,7 +77,8 @@ def add():
         return redirect(url_for('main'))
     else:
         dic = db.get_all_normal_user_info(g.db, session.get('group_id'), session.get('name'))
-        return render_template('add.html', dic=dic)
+        return render_template('add.html', dic=dic,now=now)
+
 
 
 @app.route('/logout/')
