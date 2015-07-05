@@ -8,7 +8,7 @@ except ImportError:
     import pymysql as mdb
 import time
 import sys
-
+import hashlib
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -151,8 +151,9 @@ def update_balance(con, creditor, debtor, amount):
 
 def user_authentication(con, username, password):
     cursor = con.cursor()
+    pw_hash = generate_password_hash(password)
     sql = "select screen_name,group_id from users where username='{0}' and password='{1}' ".format(username,
-                                                                                                   password)
+                                                                                                   pw_hash)
     cursor.execute(sql)
     result = cursor.fetchone()
     return result
@@ -240,8 +241,9 @@ def is_user_exist(con, user_name):
 
 def add_user(con, user_name, password, screen_name):
     cursor = con.cursor()
+    pw_hash = generate_password_hash(password)
     sql = "insert into users (username,password,screen_name,type) values ('{0}','{1}','{2}','normal')".format(user_name,
-                                                                                                              password,
+                                                                                                              pw_hash,
                                                                                                               screen_name)
     cursor.execute(sql)
     con.commit()
@@ -270,9 +272,21 @@ def get_screen_name(con, username):
     return name
 
 
+def generate_password_hash(plaintext):
+    salt = "8eF%o_G!v(2X~NrItkJq"
+    m = hashlib.md5()
+    m.update(salt + plaintext)
+    return m.hexdigest()
+
+
 if __name__ == "__main__":
     con = conn()
-    result = get_creditor_debtor_list(con)
-    for r in result:
-        print r
-        # print result
+    cursor = con.cursor()
+    # sql = "select username,password from users"
+    # cursor.execute(sql)
+    # result = cursor.fetchall()
+    # for e in result:
+    # print e, generate_password_hash(e[1])
+    # sql = "update users set password='{0}' where username='{1}'".format(generate_password_hash(e[1]), e[0])
+    # cursor.execute(sql)
+    # con.commit()
