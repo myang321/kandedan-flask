@@ -17,7 +17,7 @@
     <fieldset>
         <legend><span class="number">1</span>please fill in the info</legend>
         <label for="amount">How Much:</label>
-        <input type="number" step="0.01" min='0' id="amount" name="amount" required>
+        <input type="number" step="0.01" min='0' max='10000000' id="amount" name="amount" required>
 
         <label for="date">Date:</label>
         <input type="text" id="date" name="date" placeholder="{{ now }}">
@@ -35,14 +35,13 @@
         {% for k,v in dic.iteritems() %}
             <input type="checkbox" id={{ k }} value={{ k }} name="who"><label class="light"
                                                                               for={{ k }}>{{ v }}</label>*
-            <input type="text" name={{ "cnt"+k }} value="1">
+            <input type="text" class="cnt" name={{ "cnt"+k }} value="1"> Portition
             <br>
         {% endfor %}
 
 
     </fieldset>
-    <button type="submit">Submit</button>
+    <button type="submit" id="add_button">Submit</button>
 </form>
-
 </body>
 </html>
