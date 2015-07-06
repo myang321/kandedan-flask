@@ -56,8 +56,8 @@ def main():
 # add transaction
 @app.route('/add/', methods=['GET', 'POST'])
 def add():
-    now=datetime.datetime.now()
-    now=now.strftime("%Y-%m-%d")
+    now = datetime.datetime.now()
+    now = now.strftime("%Y-%m-%d")
     if not session.get('name'):
         return redirect(url_for('login'))
     if request.method == 'POST':
@@ -77,8 +77,7 @@ def add():
         return redirect(url_for('main'))
     else:
         dic = db.get_all_normal_user_info(g.db, session.get('group_id'), session.get('name'))
-        return render_template('add.html', dic=dic,now=now)
-
+        return render_template('add.html', dic=dic, now=now)
 
 
 @app.route('/logout/')
@@ -127,6 +126,7 @@ def signup():
     else:
         return render_template('signUp.html')
 
+
 @app.route('/setting/', methods=['GET', 'POST'])
 def setting():
     if not session.get('name'):
@@ -142,25 +142,26 @@ def setting_change_screenname():
     if not session.get('name'):
         return redirect(url_for('login'))
     if request.method == 'POST':
-        username=session.get('name')
-        newscreenname=request.form['screenname']
-        db.change_screen_name(g.db,username,newscreenname)
-        session["screen_name"]=newscreenname
+        username = session.get('name')
+        newscreenname = request.form['screenname']
+        db.change_screen_name(g.db, username, newscreenname)
+        session["screen_name"] = newscreenname
         flash("screen name change successfully")
         return render_template("setting_change_screenname.html")
     else:
         return render_template('setting_change_screenname.html')
+
 
 @app.route('/setting/change_password/', methods=['GET', 'POST'])
 def setting_change_password():
     if not session.get('name'):
         return redirect(url_for('login'))
     if request.method == 'POST':
-        username=session.get('name')
-        old_password=request.form['old_password']
-        newpassword=request.form['new_password']
-        if db.user_authentication(g.db,username,old_password):
-            db.change_password(g.db,username,newpassword)
+        username = session.get('name')
+        old_password = request.form['old_password']
+        new_password = request.form['new_password']
+        if db.user_authentication(g.db, username, old_password):
+            db.change_password(g.db, username, new_password)
             flash("password change successfully")
         else:
             flash("wrong password")
