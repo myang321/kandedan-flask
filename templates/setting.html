@@ -1,4 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
-    setting
+    setting<br>
+    <a href={{ url_for("setting_change_screenname") }}> change nickname </a><br>
+    <a href={{ url_for("setting_change_password") }}> change password </a>
 {% endblock %}
