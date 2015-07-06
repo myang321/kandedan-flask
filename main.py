@@ -127,7 +127,6 @@ def signup():
     else:
         return render_template('signUp.html')
 
-
 @app.route('/setting/', methods=['GET', 'POST'])
 def setting():
     if not session.get('name'):
@@ -136,6 +135,38 @@ def setting():
         pass
     else:
         return render_template('setting.html')
+
+
+@app.route('/setting/change_screenname/', methods=['GET', 'POST'])
+def setting_change_screenname():
+    if not session.get('name'):
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        username=session.get('name')
+        newscreenname=request.form['screenname']
+        db.change_screen_name(g.db,username,newscreenname)
+        session["screen_name"]=newscreenname
+        flash("screen name change successfully")
+        return render_template("setting_change_screenname.html")
+    else:
+        return render_template('setting_change_screenname.html')
+
+@app.route('/setting/change_password/', methods=['GET', 'POST'])
+def setting_change_password():
+    if not session.get('name'):
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        username=session.get('name')
+        old_password=request.form['old_password']
+        newpassword=request.form['new_password']
+        if db.user_authentication(g.db,username,old_password):
+            db.change_password(g.db,username,newpassword)
+            flash("password change successfully")
+        else:
+            flash("wrong password")
+        return render_template("setting_change_password.html")
+    else:
+        return render_template('setting_change_password.html')
 
 
 @app.errorhandler(404)

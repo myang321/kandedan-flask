@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block body %}
+    {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="failmsg"> {{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+    <form class="form" method="post" action={{ url_for("setting_change_screenname") }}>
+
+
+    <input type="text" required  id="screenname" name="screenname" placeholder="新的昵称"
+                                             autocomplete="off" value="{{ request.form['screenname'] }}">
+
+			<input type="submit" value="confirm">
+    </form>
+{% endblock %}

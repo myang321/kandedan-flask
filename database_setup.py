@@ -269,6 +269,17 @@ def get_screen_name(con, username):
     name = result[0]
     return name
 
+def change_screen_name(con,username,newscreenname):
+    cursor=con.cursor()
+    sql="update users set screen_name='{0}' where username='{1}'".format(newscreenname,username)
+    cursor.execute(sql)
+    con.commit()
+
+def change_password(con,username,newpassword):
+    cursor=con.cursor()
+    sql="update users set password='{0}' where username='{1}'".format(newpassword,username)
+    cursor.execute(sql)
+    con.commit()
 
 if __name__ == "__main__":
     con = conn()
