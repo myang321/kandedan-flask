@@ -69,19 +69,35 @@ input {
     width: 204px;
 }
 
-.Register input[type="password"] {
+.Register input[type="password"]#pass1 {
     background-color: #fff;
     border-top: 2px solid #2c90c6;
+    border-right: 2px solid #2c90c6;
+    border-bottom: 1px solid #2c90c6;
+    border-left: 2px solid #2c90c6;
+    border-radius: 0 0 5px 5px;
+    -moz-border-radius: 0 0 5px 5px;
+    -webkit-border-radius: 0 0 1px 1px;
+    -o-border-radius: 0 0 5px 5px;
+    -ms-border-radius: 0 0 5px 5px;
+    color: #363636;
+    padding-left: 36px;
+    width: 204px;
+}
+
+.Register input[type="password"]#pass2 {
+    background-color: #fff;
+    border-top: 1px solid #2c90c6;
     border-right: 2px solid #2c90c6;
     border-bottom: 2px solid #2c90c6;
     border-left: 2px solid #2c90c6;
     border-radius: 0 0 5px 5px;
     -moz-border-radius: 0 0 5px 5px;
-    -webkit-border-radius: 0 0 5px 5px;
+    -webkit-border-radius: 0 0 1px 1px;
     -o-border-radius: 0 0 5px 5px;
     -ms-border-radius: 0 0 5px 5px;
-    color: #363636;
     margin-bottom: 20px;
+    color: #363636;
     padding-left: 36px;
     width: 204px;
 }
@@ -120,6 +136,7 @@ input {
 p:hover {
     text-shadow: 2px 2px 20px #2c90c6, #fff 0 -1px 2px;
 }
-.failmsg{
+
+.failmsg {
     color: red;
 }
