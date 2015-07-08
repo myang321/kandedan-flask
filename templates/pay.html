@@ -1,21 +1,20 @@
-<!DOCTYPE html>
-<html>
-<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-你欠 {{ pay_to_name }} ${{ amount }}<br>
-你要还多少<br>
+{% extends "base.html" %}
+{% block head %}
 
-<form name="myform" action={{ url_for('pay') }} method="POST">
-    <div align="left">
-        <br><br>
-        <input type="number" step="0.01" required name="pay_value" size="25" value={{ amount }}>
-        <br><input type="submit" value="Pay"><br>
-        <input type="hidden" name="pay_to" value={{ pay_to }}>
-    </div>
-</form>
-</body>
-</html>
+{% endblock %}
+{% block body %}
+    你欠 {{ pay_to_name }} ${{ amount }}<br>
+    你要还多少<br>
+
+    <form name="myform" action={{ url_for('pay') }} method="POST">
+        <div align="left">
+            <br><br>
+            <input type="number" step="0.01" required name="pay_value" size="25" value={{ amount }}>
+            <br><input type="submit" value="Pay"><br>
+            <input type="hidden" name="pay_to" value={{ pay_to }}>
+        </div>
+    </form>
+{% endblock %}
+{% block script %}
+
+{% endblock %}

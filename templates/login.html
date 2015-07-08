@@ -1,47 +1,45 @@
-<!DOCTYPE html>
-<html>
-<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='login_style.css') }}">
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>看得淡财务管理系统</title>
-</head>
-<body>
-<div class="wrapper">
-    <div class="container">
-        <h1>Welcome</h1>
+{% extends "base.html" %}
+{% block head %}
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='login_style.css') }}">
+{% endblock %}
+{% block body %}
+    <div class="wrapper">
+        <div class="container">
+            <h1>Welcome</h1>
 
-        <form class="form" method="post" action={{ url_for("login") }}>
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <p class="failmsg"> {{ message }}</p>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            <input type="text" name="username" required placeholder="Username" value="{{ request.form['username'] }}">
-            <input type="password" name="password" required placeholder="Password">
+            <form class="form" method="post" action={{ url_for("login") }}>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <p class="failmsg"> {{ message }}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                <input type="text" name="username" required placeholder="Username"
+                       value="{{ request.form['username'] }}">
+                <input type="password" name="password" required placeholder="Password">
 
-            <button type="submit" id="login-button">Login</button>
-            <a href={{ url_for("signup") }}>
-                <button type="button" id="signUp-button">SignUp</button>
-            </a>
-        </form>
+                <button type="submit" id="login-button">Login</button>
+                <a href={{ url_for("signup") }}>
+                    <button type="button" id="signUp-button">SignUp</button>
+                </a>
+            </form>
+        </div>
+
+        <ul class="bg-bubbles">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
     </div>
+{% endblock %}
+{% block script %}
 
-    <ul class="bg-bubbles">
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-        <li></li>
-    </ul>
-</div>
-
-</body>
-</html>
+{% endblock %}
