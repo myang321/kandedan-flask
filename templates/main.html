@@ -1,120 +1,107 @@
-<!DOCTYPE html>
-<html>
-<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='main_style.css') }}">
-<!-- Bootstrap Core CSS -->
-<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-<!-- Custom CSS -->
-<link href="{{ url_for('static', filename='css/scrolling-nav.css') }}" rel="stylesheet">
-<link href="{{ url_for('static', filename='css/table.css') }}" rel="stylesheet">
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body id="page-top" data-spy="scroll" data-target=".navbar-fixed-top">
-<!-- Navigation -->
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
-        <div class="navbar-header page-scroll">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand page-scroll" href="#page-top">看得淡</a>
+{% extends "base.html" %}
+{% block head %}
+    <!-- Bootstrap Core CSS -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='main_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/scrolling-nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}">
+{% endblock %}
+{% block body %}
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand page-scroll" href="#page-top">看得淡</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
+                    <li class="hidden">
+                        <a class="page-scroll" href="#page-top"></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll">Welcome <strong> {{ session['screen_name'] }}</strong></a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href={{ url_for('add') }}>Add New Activity</a>
+                    </li>
+                    <li>
+                        <a class="page-scroll" href={{ url_for('setting') }}>Setting</a>
+                    </li>
+                    <li class="logout">
+                        <a class="page-scroll" href={{ url_for('logout') }}>Logout</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
         </div>
+        <!-- /.container -->
+    </nav>
+    <section id="intro" class="intro-section">
+        <div class="wrap">
+            <div class="fleft">
+                <table cellspacing='0'>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Message</th>
+                        <th>Amount</th>
+                    </tr>
+                    {% for row in rows %}
+                        {% if row[2]=='buy' %}
+                            <tr class="odd">
+                                {% else %}
+                            <tr class="even">
+                        {% endif %}
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse navbar-ex1-collapse">
-            <ul class="nav navbar-nav">
-                <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                <li class="hidden">
-                    <a class="page-scroll" href="#page-top"></a>
-                </li>
-                <li>
-                    <a class="page-scroll">Welcome <strong> {{ session['screen_name'] }}</strong></a>
-                </li>
-                <li>
-                    <a class="page-scroll" href={{ url_for('add') }}>Add New Activity</a>
-                </li>
-                <li>
-                    <a class="page-scroll" href={{ url_for('setting') }}>Setting</a>
-                </li>
-                <li class="logout">
-                    <a class="page-scroll" href={{ url_for('logout') }}>Logout</a>
-                </li>
-            </ul>
-        </div>
-        <!-- /.navbar-collapse -->
-    </div>
-    <!-- /.container -->
-</nav>
-<section id="intro" class="intro-section">
-    <div class="wrap">
-        <div class="fleft">
-            <table cellspacing='0'>
-                <tr>
-                    <th>Name</th>
-                    <th>Date</th>
-                    <th>Message</th>
-                    <th>Amount</th>
-                </tr>
-                {% for row in rows %}
-                    {% if row[2]=='buy' %}
-                        <tr class="odd">
-                            {% else %}
-                        <tr class="even">
-                    {% endif %}
-
-                <td>{{ row[6] }}</td>
-                <td>{{ row[5] }}</td>
-                <td>
-                    {% for i in row[3].split('----') %}
-                        {{ i }}<br>
-                    {% endfor %}
-                </td>
-                <td>${{ row[4] }}</td>
-                </tr>
-
-                {% endfor %}
-            </table>
-
-
-        </div>
-        <div class="fright">
-            {% if list!=None %}
-                {% for item in list %}
-                    <div>
-                        <hr>
-                        <h2>{{ item[2] }}</h2>
-                        {% for j in item[1] %}
-                            <div>欠{{ j[2] }} ${{ j[1] }}
-                                {% if j[1]>0 and session.get('name')==item[0] %}
-                                    <a href={{ url_for('pay',pay_to=j[0]) }}>
-                                        <button>pay</button>
-                                    </a>
-                                {% endif %}
-                            </div>
+                    <td>{{ row[6] }}</td>
+                    <td>{{ row[5] }}</td>
+                    <td>
+                        {% for i in row[3].split('----') %}
+                            {{ i }}<br>
                         {% endfor %}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <h2>{{ not_in_group_msg }}</h2>
-            {% endif %}
-            <hr>
+                    </td>
+                    <td>${{ row[4] }}</td>
+                    </tr>
+
+                    {% endfor %}
+                </table>
+
+
+            </div>
+            <div class="fright">
+                {% if list!=None %}
+                    {% for item in list %}
+                        <div id="people">
+                            <h2>{{ item[2] }}</h2>
+                            {% for j in item[1] %}
+                                <div>欠{{ j[2] }} ${{ j[1] }}
+                                    {% if j[1]>0 and session.get('name')==item[0] %}
+                                        <a href={{ url_for('pay',pay_to=j[0]) }}>
+                                            <button>pay</button>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <h2>{{ not_in_group_msg }}</h2>
+                {% endif %}
+            </div>
         </div>
-    </div>
-</section>
-<!-- jQuery -->
-<script src={{ url_for('static', filename='js/jquery.js') }}></script>
-
-<!-- Bootstrap Core JavaScript -->
-<script src={{ url_for('static', filename='js/bootstrap.min.js') }}></script>
-
-<!-- Scrolling Nav JavaScript -->
-<script src={{ url_for('static', filename='js/jquery.easing.min.js') }}></script>
-<script src={{ url_for('static', filename='js/scrolling-nav.js') }}></script>
-
-</body>
-</html>
+    </section>
+    <!-- jQuery -->
+{% endblock %}
+{% block script %}
+    <script src={{ url_for('static', filename='js/scrolling-nav.js') }}></script>
+{% endblock %}

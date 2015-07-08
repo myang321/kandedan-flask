@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html>
-<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
-{% block link %}
-{% endblock %}
 <head lang="en">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}">
     <meta charset="UTF-8">
     <title>看得淡财务管理系统</title>
+    {% block head %}
+    {% endblock %}
 </head>
 <body>
 {% block body %}
 {% endblock %}
+
 <script src={{ url_for('static', filename='js/jquery.js') }}></script>
 <script src={{ url_for('static', filename='js/jquery.easing.min.js') }}></script>
 <script src={{ url_for('static', filename='js/bootstrap.js') }}></script>
+
+{% block script %}
+{% endblock %}
 </body>
 </html>
