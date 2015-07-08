@@ -1,18 +1,33 @@
 .wrap {
     width: 100%;
     overflow: auto;
+    background: #ecd9ab;
 }
 
 .fleft {
     float: left;
     width: 60%;
 
-    height: 600px;
+    /*height: 600px;*/
+    overflow: hidden;
 }
 
 .fright {
     float: right;
     width: 40%;
+    background: white;
+    /*height: 600px;*/
+    overflow: hidden;
+}
+
+#people {
     background: pink;
-    height: 600px;
+    border-top: 2px solid #cacaca;
+    border-right: 2px solid #cacaca;
+    border-bottom: 2px solid #cacaca;
+    border-left: 2px solid #cacaca;
+}
+
+#intro {
+    background: #ecd9ab;
 }

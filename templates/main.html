@@ -81,8 +81,7 @@
             <div class="fright">
                 {% if list!=None %}
                     {% for item in list %}
-                        <div>
-                            <hr>
+                        <div id="people">
                             <h2>{{ item[2] }}</h2>
                             {% for j in item[1] %}
                                 <div>欠{{ j[2] }} ${{ j[1] }}
@@ -98,7 +97,6 @@
                 {% else %}
                     <h2>{{ not_in_group_msg }}</h2>
                 {% endif %}
-                <hr>
             </div>
         </div>
     </section>
