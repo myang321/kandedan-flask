@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+    {% if message==None %}
+        <form class="form" method="post" action={{ url_for("leave_group") }}>
+
+        you are sure to leave this group?
+            <br>
+            <br>
+{#        <input type="text" required  id="group_name" name="group_name" placeholder="group name"#}
+{#                                                 autocomplete="off" value="{{ request.form['group_name'] }}">#}
+
+                <input type="submit" value="confirm">
+        </form>
+    {% else %}
+        {{ message }}
+    {% endif %}
+{% endblock %}

@@ -2,5 +2,9 @@
 {% block body %}
     setting<br>
     <a href={{ url_for("setting_change_screenname") }}> change nickname </a><br>
-    <a href={{ url_for("setting_change_password") }}> change password </a>
+    <a href={{ url_for("setting_change_password") }}> change password </a><br>
+    <a href={{ url_for("create_group") }}> create group</a><br>
+    <a href={{ url_for("join_group") }}> join group</a><br>
+    <a href={{ url_for("leave_group") }}> leave group</a><br>
+    <a href={{ url_for("delete_group") }}> delete group</a><br>
 {% endblock %}

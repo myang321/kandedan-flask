@@ -170,6 +170,82 @@ def setting_change_password():
         return render_template('setting_change_password.html')
 
 
+@app.route('/setting/create_group/', methods=['GET', 'POST'])
+def create_group():
+    if not session.get('name'):
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        holder = session.get('name')
+        group_name=request.form['group_name']
+        if not db.is_groupname_exist(g.db,group_name):
+            session['group_id']=db.create_group(g.db,group_name,holder)
+            message="group create successfully"
+        else:
+            message="group_name has been used"
+        return render_template("create_group.html",message=message)
+    else:
+        return render_template("create_group.html")
+
+@app.route('/setting/join_group/', methods=['GET', 'POST'])
+def join_group():
+    if not session.get('name'):
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        username = session.get('name')
+        group_name=request.form['group_name']
+        if db.is_groupname_exist(g.db,group_name)==True:
+            db.join_group(g.db,group_name,username)
+            session['group_id']=db.get_group_id(g.db,group_name)
+            message="join group successfully"
+        else:
+            message="group_name does not exist"
+        return render_template("join_group.html",message=message)
+    else:
+        return render_template("join_group.html")
+
+@app.route('/setting/leave_group/', methods=['GET', 'POST'])
+def leave_group():
+    if not session.get('name'):
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        username = session.get('name')
+        db.leave_group(g.db,username)
+        session['group_id']=0
+        message="you have leaved this group"
+        return render_template("leave_group.html",message=message)
+    else:
+        message=None
+        if session.get('group_id')==0:
+            message="you don't belong to any group"
+        elif session.get('name')==db.get_holder(g.db,session.get('group_id')):
+            message="you are the holder, you can not leave a group,but you can delete group"
+        elif db.check_balance(g.db,session.get('name'))>0:
+            message="your balance is not 0, you cannot leave the group now"
+        return render_template("leave_group.html",message=message)
+
+@app.route('/setting/delete_group/', methods=['GET', 'POST'])
+def delete_group():
+    if not session.get('name'):
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        groupid=session.get('group_id')
+        username=session.get('name')
+        db.delete_group(g.db,username,groupid)
+        session['group_id']=0
+        message="you have already delete this group"
+        return render_template("delete_group.html",message=message)
+
+    else:
+        message=None
+        if session.get('group_id')==0:
+            message="you don't belong to any group"
+        elif session.get('name')!=db.get_holder(g.db,session.get('group_id')):
+            message="you are not the holder, you can not delete group"
+        elif db.get_group_size(g.db,session.get('group_id'))>1:
+            message="your group has other people, you can not delete"
+        return render_template("delete_group.html",message=message)
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block body %}
+    {% if session.get('group_id')==0 %}
+
+        <form class="form" method="post" action={{ url_for("join_group") }}>
+
+        please input your group name
+            <br>
+            <br>
+        <input type="text" required  id="group_name" name="group_name" placeholder="group name"
+                                                 autocomplete="off" value="{{ request.form['group_name'] }}">
+
+                <input type="submit" value="confirm">
+        </form>
+
+    {% else %}
+        <div>you have already in a group</div>
+    {% endif %}
+    <script type="text/javascript">
+        {% if message  %}
+            alert("{{ message }}");
+        {% endif %}
+    </script>
+{% endblock %}
