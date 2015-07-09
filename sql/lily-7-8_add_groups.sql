@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50403
 File Encoding         : 65001
 
-Date: 2015-07-05 11:58:46
+Date: 2015-07-08 16:56:23
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -28,48 +28,33 @@ CREATE TABLE `balance` (
 -- ----------------------------
 -- Records of balance
 -- ----------------------------
-INSERT INTO `balance` VALUES ('cdh', 'ty', '0000000.00');
-INSERT INTO `balance` VALUES ('cdh', 'zl', '0000000.00');
-INSERT INTO `balance` VALUES ('ty', 'cdh', '0000000.00');
 INSERT INTO `balance` VALUES ('ty', 'zl', '0000034.53');
-INSERT INTO `balance` VALUES ('zl', 'cdh', '0000000.00');
 INSERT INTO `balance` VALUES ('zl', 'ty', '0000000.00');
 INSERT INTO `balance` VALUES ('meng', 'zl', '0000000.00');
-INSERT INTO `balance` VALUES ('zl', 'meng', '0000010.90');
-INSERT INTO `balance` VALUES ('meng', 'cdh', '0000000.00');
-INSERT INTO `balance` VALUES ('cdh', 'meng', '0000000.00');
-INSERT INTO `balance` VALUES ('meng', 'ty', '0000000.00');
+INSERT INTO `balance` VALUES ('zl', 'meng', '0000001.39');
+INSERT INTO `balance` VALUES ('meng', 'ty', '0000009.51');
 INSERT INTO `balance` VALUES ('ty', 'meng', '0000000.00');
-INSERT INTO `balance` VALUES ('April', 'zl', '0000000.00');
-INSERT INTO `balance` VALUES ('zl', 'April', '0000000.00');
-INSERT INTO `balance` VALUES ('April', 'cdh', '0000000.00');
-INSERT INTO `balance` VALUES ('cdh', 'April', '0000000.00');
-INSERT INTO `balance` VALUES ('April', 'ty', '0000000.00');
-INSERT INTO `balance` VALUES ('ty', 'April', '0000000.00');
-INSERT INTO `balance` VALUES ('April', 'meng', '0000000.00');
-INSERT INTO `balance` VALUES ('meng', 'April', '0000000.00');
-INSERT INTO `balance` VALUES ('Sophie', 'zl', '0000000.00');
-INSERT INTO `balance` VALUES ('zl', 'Sophie', '0000000.00');
-INSERT INTO `balance` VALUES ('Sophie', 'cdh', '0000000.00');
-INSERT INTO `balance` VALUES ('cdh', 'Sophie', '0000000.00');
-INSERT INTO `balance` VALUES ('Sophie', 'ty', '0000000.00');
-INSERT INTO `balance` VALUES ('ty', 'Sophie', '0000000.00');
-INSERT INTO `balance` VALUES ('Sophie', 'meng', '0000000.00');
-INSERT INTO `balance` VALUES ('meng', 'Sophie', '0000000.00');
 INSERT INTO `balance` VALUES ('Sophie', 'April', '0000000.00');
 INSERT INTO `balance` VALUES ('April', 'Sophie', '0000000.00');
-INSERT INTO `balance` VALUES ('zhuzhu', 'zl', '0000000.00');
-INSERT INTO `balance` VALUES ('zl', 'zhuzhu', '0000000.00');
-INSERT INTO `balance` VALUES ('zhuzhu', 'cdh', '0000000.00');
-INSERT INTO `balance` VALUES ('cdh', 'zhuzhu', '0000000.00');
-INSERT INTO `balance` VALUES ('zhuzhu', 'ty', '0000000.00');
-INSERT INTO `balance` VALUES ('ty', 'zhuzhu', '0000000.00');
-INSERT INTO `balance` VALUES ('zhuzhu', 'meng', '0000000.00');
-INSERT INTO `balance` VALUES ('meng', 'zhuzhu', '0000000.00');
-INSERT INTO `balance` VALUES ('zhuzhu', 'April', '0000000.00');
-INSERT INTO `balance` VALUES ('April', 'zhuzhu', '0000000.00');
-INSERT INTO `balance` VALUES ('zhuzhu', 'Sophie', '0000000.00');
-INSERT INTO `balance` VALUES ('Sophie', 'zhuzhu', '0000000.00');
+
+-- ----------------------------
+-- Table structure for `groups`
+-- ----------------------------
+DROP TABLE IF EXISTS `groups`;
+CREATE TABLE `groups` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL DEFAULT '',
+  `holder` varchar(30) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `hehe` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of groups
+-- ----------------------------
+INSERT INTO `groups` VALUES ('1', 'kandedan', 'meng');
+INSERT INTO `groups` VALUES ('2', 'cdh', 'cdh');
+INSERT INTO `groups` VALUES ('3', 'april', 'April');
 
 -- ----------------------------
 -- Table structure for `trans_detail`
@@ -83,7 +68,7 @@ CREATE TABLE `trans_detail` (
   `percent` float(10,2) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `trans_id` (`trans_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
 
 -- ----------------------------
 -- Records of trans_detail
@@ -107,6 +92,9 @@ INSERT INTO `trans_detail` VALUES ('16', '143598809567', 'zl', '2.50', null);
 INSERT INTO `trans_detail` VALUES ('17', '143598809567', 'ty', '2.50', null);
 INSERT INTO `trans_detail` VALUES ('18', '143598814311', 'zl', '4.06', null);
 INSERT INTO `trans_detail` VALUES ('19', '143598814311', 'ty', '4.06', null);
+INSERT INTO `trans_detail` VALUES ('20', '143613203595', 'zl', '9.51', null);
+INSERT INTO `trans_detail` VALUES ('21', '143613203595', 'meng', '9.51', null);
+INSERT INTO `trans_detail` VALUES ('22', '143613203595', 'ty', '9.51', null);
 
 -- ----------------------------
 -- Table structure for `transaction`
@@ -135,6 +123,7 @@ INSERT INTO `transaction` VALUES ('143598794011', 'zl', 'buy', 'å¾·å·žæ�
 INSERT INTO `transaction` VALUES ('143598799557', 'zl', 'buy', 'ä»Šå¤©çš„æ™šé¥­---- shared with zhang lei,meng,ty----meng owe zhang lei from $9.04 to $10.90----zhang lei owe ty from $42.95 to $41.09', '5.58', '7/3/2015');
 INSERT INTO `transaction` VALUES ('143598809567', 'zl', 'buy', 'æ—©é¥­è›‹ç³•---- shared with zhang lei,ty----zhang lei owe ty from $41.09 to $38.59', '5.00', '6/25/2015');
 INSERT INTO `transaction` VALUES ('143598814311', 'zl', 'buy', 'çŸ¿æ³‰æ°´å’Œé¢åŒ…---- shared with zhang lei,ty----zhang lei owe ty from $38.59 to $34.53', '8.12', '7/3/2015');
+INSERT INTO `transaction` VALUES ('143613203595', 'meng', 'buy', 'ç¾Žç©ºä¹°èœ æŽ’éª¨ï¼Œé¸­ç¿…---- shared with zhang lei,meng,ty----meng owe zhang lei from $10.90 to $1.39----ty owe meng from $0.00 to $9.51', '28.53', '7-5');
 
 -- ----------------------------
 -- Table structure for `users`
@@ -154,7 +143,7 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', 'zl', '3aad20e566bf9d5585c9dfbafae029f9', 'zhang lei', 'normal', '1');
+INSERT INTO `users` VALUES ('1', 'zl', '3aad20e566bf9d5585c9dfbafae029f9', 'å¼ ç£Š', 'normal', '1');
 INSERT INTO `users` VALUES ('2', 'cdh', '3aad20e566bf9d5585c9dfbafae029f9', 'cdh', 'normal', '2');
 INSERT INTO `users` VALUES ('3', 'ty', '3aad20e566bf9d5585c9dfbafae029f9', 'ty', 'normal', '1');
 INSERT INTO `users` VALUES ('4', 'root', '3aad20e566bf9d5585c9dfbafae029f9', 'root', 'super', '0');
