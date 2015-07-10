@@ -1,0 +1,5 @@
+Flask==0.10.1
+Jinja2==2.7.3
+MySQL-python==1.2.4b4
+Werkzeug==0.10.4
+pytz==2015.4

@@ -1,6 +1,5 @@
 from flask import Flask, render_template, redirect, request, session, url_for, g, flash
 import database_setup as db
-import datetime
 
 app = Flask(__name__)
 app.debug = True
@@ -56,7 +55,7 @@ def main():
 # add transaction
 @app.route('/add/', methods=['GET', 'POST'])
 def add():
-    now = datetime.datetime.now()
+    now = db.get_now_time()
     now = now.strftime("%Y-%m-%d")
     if not session.get('name'):
         return redirect(url_for('login'))
@@ -96,7 +95,7 @@ def pay():
         except ValueError:
             return redirect(url_for('main'))
         pay_to = request.form['pay_to']
-        now = datetime.datetime.now()
+        now = db.get_now_time()
         trans = db.Transaction(session['name'], amount=pay_value, date=str(now), message="", who=pay_to,
                                type1="pay")
         db.save_transaction(g.db, trans, session.get('name'))
@@ -176,15 +175,16 @@ def create_group():
         return redirect(url_for('login'))
     if request.method == 'POST':
         holder = session.get('name')
-        group_name=request.form['group_name']
-        if not db.is_groupname_exist(g.db,group_name):
-            session['group_id']=db.create_group(g.db,group_name,holder)
-            message="group create successfully"
+        group_name = request.form['group_name']
+        if not db.is_groupname_exist(g.db, group_name):
+            session['group_id'] = db.create_group(g.db, group_name, holder)
+            message = "group create successfully"
         else:
-            message="group_name has been used"
-        return render_template("create_group.html",message=message)
+            message = "group_name has been used"
+        return render_template("create_group.html", message=message)
     else:
         return render_template("create_group.html")
+
 
 @app.route('/setting/join_group/', methods=['GET', 'POST'])
 def join_group():
@@ -192,16 +192,17 @@ def join_group():
         return redirect(url_for('login'))
     if request.method == 'POST':
         username = session.get('name')
-        group_name=request.form['group_name']
-        if db.is_groupname_exist(g.db,group_name)==True:
-            db.join_group(g.db,group_name,username)
-            session['group_id']=db.get_group_id(g.db,group_name)
-            message="join group successfully"
+        group_name = request.form['group_name']
+        if db.is_groupname_exist(g.db, group_name) == True:
+            db.join_group(g.db, group_name, username)
+            session['group_id'] = db.get_group_id(g.db, group_name)
+            message = "join group successfully"
         else:
-            message="group_name does not exist"
-        return render_template("join_group.html",message=message)
+            message = "group_name does not exist"
+        return render_template("join_group.html", message=message)
     else:
         return render_template("join_group.html")
+
 
 @app.route('/setting/leave_group/', methods=['GET', 'POST'])
 def leave_group():
@@ -209,41 +210,42 @@ def leave_group():
         return redirect(url_for('login'))
     if request.method == 'POST':
         username = session.get('name')
-        db.leave_group(g.db,username)
-        session['group_id']=0
-        message="you have leaved this group"
-        return render_template("leave_group.html",message=message)
+        db.leave_group(g.db, username)
+        session['group_id'] = 0
+        message = "you have leaved this group"
+        return render_template("leave_group.html", message=message)
     else:
-        message=None
-        if session.get('group_id')==0:
-            message="you don't belong to any group"
-        elif session.get('name')==db.get_holder(g.db,session.get('group_id')):
-            message="you are the holder, you can not leave a group,but you can delete group"
-        elif db.check_balance(g.db,session.get('name'))>0:
-            message="your balance is not 0, you cannot leave the group now"
-        return render_template("leave_group.html",message=message)
+        message = None
+        if session.get('group_id') == 0:
+            message = "you don't belong to any group"
+        elif session.get('name') == db.get_holder(g.db, session.get('group_id')):
+            message = "you are the holder, you can not leave a group,but you can delete group"
+        elif db.check_balance(g.db, session.get('name')) > 0:
+            message = "your balance is not 0, you cannot leave the group now"
+        return render_template("leave_group.html", message=message)
+
 
 @app.route('/setting/delete_group/', methods=['GET', 'POST'])
 def delete_group():
     if not session.get('name'):
         return redirect(url_for('login'))
     if request.method == 'POST':
-        groupid=session.get('group_id')
-        username=session.get('name')
-        db.delete_group(g.db,username,groupid)
-        session['group_id']=0
-        message="you have already delete this group"
-        return render_template("delete_group.html",message=message)
+        groupid = session.get('group_id')
+        username = session.get('name')
+        db.delete_group(g.db, username, groupid)
+        session['group_id'] = 0
+        message = "you have already delete this group"
+        return render_template("delete_group.html", message=message)
 
     else:
-        message=None
-        if session.get('group_id')==0:
-            message="you don't belong to any group"
-        elif session.get('name')!=db.get_holder(g.db,session.get('group_id')):
-            message="you are not the holder, you can not delete group"
-        elif db.get_group_size(g.db,session.get('group_id'))>1:
-            message="your group has other people, you can not delete"
-        return render_template("delete_group.html",message=message)
+        message = None
+        if session.get('group_id') == 0:
+            message = "you don't belong to any group"
+        elif session.get('name') != db.get_holder(g.db, session.get('group_id')):
+            message = "you are not the holder, you can not delete group"
+        elif db.get_group_size(g.db, session.get('group_id')) > 1:
+            message = "your group has other people, you can not delete"
+        return render_template("delete_group.html", message=message)
 
 
 @app.errorhandler(404)
