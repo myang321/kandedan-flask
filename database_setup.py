@@ -11,6 +11,7 @@ import sys
 import hashlib
 from datetime import datetime
 from pytz import timezone
+import os
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -49,16 +50,16 @@ class Transaction:
 
 
 def conn():
-    try:
+    if 'SERVER_SOFTWARE' in os.environ:
         # for SAE
         from sae.const import (MYSQL_HOST, MYSQL_HOST_S, MYSQL_PORT, MYSQL_USER, MYSQL_PASS, MYSQL_DB)
 
         con1 = mdb.connect(MYSQL_HOST, MYSQL_USER, MYSQL_PASS, MYSQL_DB, port=int(MYSQL_PORT))
-    except ImportError:
+    else:
         # for local
         from local import *
 
-        print "ImportError  No SAE"
+        print "connecting local mysql"
 
         con1 = mdb.connect(host=LOCAL_HOST, user=LOCAL_USERNAME, passwd=LOCAL_PASSWD, db=LOCAL_DB_NAME, port=LOCAL_PORT)
     return con1
