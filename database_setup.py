@@ -12,6 +12,7 @@ import hashlib
 from datetime import datetime
 from pytz import timezone
 import os
+import re
 
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -27,8 +28,8 @@ class Transaction:
     def __init__(self, owner, amount, date, message, who, type1, ):
         self.owner = owner
         self.amount = amount
-        self.date = date
-        self.message = message
+        self.date = re.escape(date)
+        self.message = re.escape(message)
         # if type ==pay, its just a name, if type == buy, its a tuple list
         self.who = who
         self.type = type1
@@ -155,7 +156,8 @@ def update_balance(con, creditor, debtor, amount):
 def user_authentication(con, username, password):
     cursor = con.cursor()
     pw_hash = generate_password_hash(password)
-    sql = "select screen_name,group_id from users where username='{0}' and password='{1}' ".format(username,
+    es_username = re.escape(username)
+    sql = "select screen_name,group_id from users where username='{0}' and password='{1}' ".format(es_username,
                                                                                                    pw_hash)
     cursor.execute(sql)
     result = cursor.fetchone()
@@ -398,8 +400,9 @@ def get_now_time():
 
 
 if __name__ == "__main__":
-    con = conn()
-    cursor = con.cursor()
+    # con = conn()
+    # cursor = con.cursor()
+    print generate_password_hash("sadf3ads2fdsa")
     # sql = "select username,password from users"
     # cursor.execute(sql)
     # result = cursor.fetchall()
