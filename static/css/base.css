@@ -26,6 +26,6 @@ html {
 .intro-section {
     height: 100%;
     padding-top: 150px;
-    text-align: center;
+    /*text-align: center;*/
     background: #fff;
 }
