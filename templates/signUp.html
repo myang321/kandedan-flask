@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base2.html" %}
 {% block head %}
     <link rel=stylesheet type=text/css href="{{ url_for('static',filename='css/signup_style.css') }}">
 {% endblock %}
@@ -33,6 +33,10 @@
                                                          placeholder="确认密码">
 
             <input type="submit" value="Register">
+
+            <a href="{{ url_for('login') }}" ><input class="cancel" type="button" value="Cancel"> </a>
+
+
         </form>
     </div>
 {% endblock %}

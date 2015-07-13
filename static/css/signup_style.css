@@ -103,6 +103,7 @@ input {
 }
 
 .Register input[type="submit"] {
+    display: inline;
     background-color: #2c90c6;
     border: 1px solid #2c90c6;
     border-radius: 15px;
@@ -115,7 +116,25 @@ input {
     line-height: 48px;
     text-align: center;
     text-transform: uppercase;
-    width: 240px;
+    width: 120px;
+}
+
+
+.cancel {
+    display: inline;
+    background-color: #2c90c6;
+    border: 1px solid #2c90c6;
+    border-radius: 15px;
+    -moz-border-radius: 15px;
+    -webkit-border-radius: 15px;
+    -ms-border-radius: 15px;
+    -o-border-radius: 15px;
+    color: #fff;
+    font-weight: bold;
+    line-height: 48px;
+    text-align: center;
+    text-transform: uppercase;
+    width: 120px;
 }
 
 .Register input[type="submit"]:hover {
