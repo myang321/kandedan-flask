@@ -115,7 +115,7 @@ form input:focus {
     color: #53e3a6;
 }
 
-form button {
+#login-button {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
@@ -125,7 +125,23 @@ form button {
     padding: 10px 15px;
     color: #53e3a6;
     border-radius: 3px;
-    width: 250px;
+    width: 200px;
+    cursor: pointer;
+    font-size: 18px;
+    -webkit-transition-duration: 0.25s;
+    transition-duration: 0.25s;
+}
+#signup-button{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: 0;
+    background-color: white;
+    border: 0;
+    padding: 10px 15px;
+    color: #53e3a6;
+    border-radius: 3px;
+    width: 120px;
     cursor: pointer;
     font-size: 18px;
     -webkit-transition-duration: 0.25s;
