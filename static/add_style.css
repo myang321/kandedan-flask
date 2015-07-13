@@ -116,7 +116,7 @@ label.light {
 
 }
 
-input[type="text"].cnt {
+input[type="number"].cnt {
     background: rgba(255, 255, 255, 0.1);
     border: none;
     font-size: 16px;
