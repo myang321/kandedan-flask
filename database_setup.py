@@ -280,7 +280,8 @@ def get_screen_name(con, username):
 
 def change_screen_name(con, username, newscreenname):
     cursor = con.cursor()
-    sql = "update users set screen_name='{0}' where username='{1}'".format(newscreenname, username)
+    es_newscreenname = re.escape(newscreenname)
+    sql = "update users set screen_name='{0}' where username='{1}'".format(es_newscreenname, username)
     cursor.execute(sql)
     con.commit()
 
@@ -302,42 +303,33 @@ def generate_password_hash(plaintext):
 
 def create_group(con, group_name, holder):
     cursor = con.cursor()
-    sql = "insert into groups (name,holder) values ('{0}','{1}')".format(group_name, holder)
+    es_group_name = re.escape(group_name)
+    sql = "insert into groups (name,holder) values ('{0}','{1}')".format(es_group_name, holder)
     cursor.execute(sql)
-    group_id = get_group_id(con, group_name)
-    # TODO separate function
-    sql1 = "update users set group_id={0} where username='{1}'".format(group_id, holder)
-    cursor.execute(sql1)
-    con.commit()
+    group_id = get_group_id(con, es_group_name)
+    update_user_group(con, holder, group_id)
     return group_id
 
 
 def get_group_id(con, name):
     cursor = con.cursor()
-    sql = "select id from groups where name='{0}'".format(name)
+    es_name = re.escape(name)
+    sql = "select id from groups where name='{0}'".format(es_name)
     cursor.execute(sql)
     group_id = cursor.fetchone()
     return group_id[0]
 
 
 def join_group(con, groupname, username):
-    cursor = con.cursor()
-    sql = "select id from groups where name='{0}'".format(groupname)
-    cursor.execute(sql)
-    resultid = cursor.fetchone()
-    resultid = resultid[0]
-    sql1 = "update users set group_id={0} where username='{1}'".format(resultid, username)
-    cursor.execute(sql1)
-    add_newuser_balance(con, resultid, username)
+    group_id = get_group_id(con, groupname)
+    update_user_group(con, username, group_id)
+    add_newuser_balance(con, group_id, username)
     con.commit()
 
 
 def leave_group(con, username):
-    cursor = con.cursor()
-    sql = "update users set group_id=0 where username='{0}'".format(username)
-    cursor.execute(sql)
+    update_user_group(con, username, 0)
     delete_balance(con, username)
-    con.commit()
 
 
 def delete_balance(con, username):
@@ -351,8 +343,7 @@ def delete_group(con, username, group_id):
     cursor = con.cursor()
     sql1 = "delete from groups where id={0}".format(group_id)
     cursor.execute(sql1)
-    sql3 = "update users set group_id=0 where username='{0}'".format(username)
-    cursor.execute(sql3)
+    update_user_group(con, username, 0)
     con.commit()
 
 
@@ -360,10 +351,8 @@ def get_holder(con, group_id):
     cursor = con.cursor()
     sql0 = "select holder from groups where id={0}".format(group_id)
     cursor.execute(sql0)
-    holder = cursor.fetchone()
-    holder = holder[0]
-    con.commit()
-    return holder
+    result = cursor.fetchone()
+    return result[0]
 
 
 def get_group_size(con, group_id):
@@ -371,13 +360,13 @@ def get_group_size(con, group_id):
     sql = "select count(*) from users where group_id={0}".format(group_id)
     cursor.execute(sql)
     size = cursor.fetchone()
-    con.commit()
     return size[0]
 
 
 def is_groupname_exist(con, group_name):
     cursor = con.cursor()
-    sql = "select name from groups WHERE name='{0}'".format(group_name)
+    es_group_name = re.escape(group_name)
+    sql = "select name from groups WHERE name='{0}'".format(es_group_name)
     cursor.execute(sql)
     result = cursor.fetchone()
     if result == None:
@@ -397,6 +386,13 @@ def check_balance(con, username):
 def get_now_time():
     now = datetime.now(timezone('US/Arizona'))
     return now
+
+
+def update_user_group(con, username, new_groupid):
+    cursor = con.cursor()
+    sql = "update users set group_id={0} where username='{1}'".format(new_groupid, username)
+    cursor.execute(sql)
+    con.commit()
 
 
 if __name__ == "__main__":
