@@ -280,7 +280,8 @@ def get_screen_name(con, username):
 
 def change_screen_name(con, username, newscreenname):
     cursor = con.cursor()
-    sql = "update users set screen_name='{0}' where username='{1}'".format(newscreenname, username)
+    es_newscreenname = re.escape(newscreenname)
+    sql = "update users set screen_name='{0}' where username='{1}'".format(es_newscreenname, username)
     cursor.execute(sql)
     con.commit()
 
@@ -302,9 +303,10 @@ def generate_password_hash(plaintext):
 
 def create_group(con, group_name, holder):
     cursor = con.cursor()
-    sql = "insert into groups (name,holder) values ('{0}','{1}')".format(group_name, holder)
+    es_group_name = re.escape(group_name)
+    sql = "insert into groups (name,holder) values ('{0}','{1}')".format(es_group_name, holder)
     cursor.execute(sql)
-    group_id = get_group_id(con, group_name)
+    group_id = get_group_id(con, es_group_name)
     # TODO separate function
     sql1 = "update users set group_id={0} where username='{1}'".format(group_id, holder)
     cursor.execute(sql1)
@@ -322,7 +324,8 @@ def get_group_id(con, name):
 
 def join_group(con, groupname, username):
     cursor = con.cursor()
-    sql = "select id from groups where name='{0}'".format(groupname)
+    es_groupname = re.escape(groupname)
+    sql = "select id from groups where name='{0}'".format(es_groupname)
     cursor.execute(sql)
     resultid = cursor.fetchone()
     resultid = resultid[0]
@@ -377,7 +380,8 @@ def get_group_size(con, group_id):
 
 def is_groupname_exist(con, group_name):
     cursor = con.cursor()
-    sql = "select name from groups WHERE name='{0}'".format(group_name)
+    es_group_name = re.escape(group_name)
+    sql = "select name from groups WHERE name='{0}'".format(es_group_name)
     cursor.execute(sql)
     result = cursor.fetchone()
     if result == None:
