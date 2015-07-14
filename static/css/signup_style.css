@@ -118,10 +118,11 @@ input {
     text-transform: uppercase;
     width: 120px;
 }
-
+.Register input[type="submit"]{float:left}
+.cancel{
+    float: right;}
 
 .cancel {
-    display: inline;
     background-color: #2c90c6;
     border: 1px solid #2c90c6;
     border-radius: 15px;
