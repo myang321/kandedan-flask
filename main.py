@@ -107,10 +107,9 @@ def pay():
         return render_template('pay.html', pay_to=pay_to, amount=amount, pay_to_name=pay_to_name)
 
 
-@app.route('/signup/', methods=['GET', 'POST'])
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        print "in signup post"
         username = request.form['username']
         password = request.form['password']
         screen_name = request.form['screenname']

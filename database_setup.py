@@ -66,12 +66,31 @@ def conn():
     return con1
 
 
+def execute_select_one(con, sql):
+    cursor = con.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchone()
+    return result
+
+
+def execute_select_all(con, sql):
+    cursor = con.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    return result
+
+
+def execute_non_query(con, sql):
+    cursor = con.cursor()
+    cursor.execute(sql)
+    con.commit()
+
+
 def get_timestamp():
     return long(time.time() * 100)
 
 
 def get_all_transaction(con, group_id=None, username=None):
-    cursor = con.cursor()
     if group_id == None:
         sql = "select * from {0} order by id desc".format(TRANSACTION_TABLE)
     elif group_id == 0:
@@ -79,8 +98,7 @@ def get_all_transaction(con, group_id=None, username=None):
     else:
         sql = "select * from {0} where username in (select username from users where group_id={1}) order by id desc".format(
             TRANSACTION_TABLE, group_id)
-    cursor.execute(sql)
-    rows = cursor.fetchall()
+    rows = execute_select_all(con, sql)
     dic1 = get_all_normal_user_info(con)
     lists = [list(row) for row in rows]
     # append screen name to the result tuple
@@ -90,14 +108,12 @@ def get_all_transaction(con, group_id=None, username=None):
 
 
 def save_transaction(con, trans, username):
-    cursor = con.cursor()
     sql = "insert into transaction values({0} ,  '{1}' , '{2}' , '{3}' ,  {4} , '{5}')".format(trans.ts, username,
                                                                                                trans.type,
                                                                                                trans.message,
                                                                                                trans.amount,
                                                                                                trans.date)
-    cursor.execute(sql)
-    con.commit()
+    execute_non_query(con, sql)
     if trans.type == 'buy':
         for u in trans.who:
             debtor = u[0]
@@ -106,7 +122,7 @@ def save_transaction(con, trans, username):
             sql = "insert into trans_detail ( trans_id,debtor,amount) values({0},'{1}',{2})".format(trans.ts,
                                                                                                     debtor,
                                                                                                     indi_amount)
-            cursor.execute(sql)
+            execute_non_query(con, sql)
             con.commit()
             if debtor == username:
                 continue
@@ -146,33 +162,28 @@ def change_balance(con, creditor, debtor, amount, trans_id):
 
 
 def update_balance(con, creditor, debtor, amount):
-    cursor = con.cursor()
     sql = "update balance set amount={0} where creditor='{1}' and debtor='{2}'".format(amount, creditor, debtor)
-    cursor.execute(sql)
-    con.commit()
+    execute_non_query(con, sql)
     print "update balance", creditor, debtor, amount
 
 
 def user_authentication(con, username, password):
-    cursor = con.cursor()
     pw_hash = generate_password_hash(password)
     es_username = re.escape(username)
+    # underscore will cause problem for username
     sql = "select screen_name,group_id from users where username='{0}' and password='{1}' ".format(es_username,
                                                                                                    pw_hash)
-    cursor.execute(sql)
-    result = cursor.fetchone()
+    result = execute_select_one(con, sql)
     return result
 
 
 # only return username
 def get_all_normal_users(con, group_id=None):
-    cursor = con.cursor()
     if group_id == None:
         sql = "SELECT username from {0} where type='normal'".format(USER_TABLE)
     else:
         sql = "SELECT username from {0} where type='normal' and group_id={1}".format(USER_TABLE, group_id)
-    cursor.execute(sql)
-    result = cursor.fetchall()
+    result = execute_select_all(con, sql)
     array = []
     for i in result:
         array.append(i[0])
@@ -180,7 +191,6 @@ def get_all_normal_users(con, group_id=None):
 
 
 def get_all_normal_user_info(con, group_id=None, username=None):
-    cursor = con.cursor()
     if group_id == None:
         sql = "SELECT username,screen_name from {0} where type='normal'".format(USER_TABLE)
     elif group_id == 0:
@@ -188,8 +198,7 @@ def get_all_normal_user_info(con, group_id=None, username=None):
         print sql
     else:
         sql = "SELECT username,screen_name from {0} where type='normal' and group_id={1}".format(USER_TABLE, group_id)
-    cursor.execute(sql)
-    result = cursor.fetchall()
+    result = execute_select_all(con, sql)
     dic1 = {}
     for row in result:
         dic1[row[0]] = row[1]
@@ -198,7 +207,6 @@ def get_all_normal_user_info(con, group_id=None, username=None):
 
 def get_creditor_debtor_list(con, group_id=None):
     users = get_all_normal_users(con, group_id)
-    cursor = con.cursor()
     list1 = []
     dic1 = get_all_normal_user_info(con, group_id)
     for u in users:
@@ -207,8 +215,7 @@ def get_creditor_debtor_list(con, group_id=None):
         else:
             sql = "select creditor,amount from balance where debtor='{0}' and creditor in (select username from users where group_id={1})".format(
                 u, group_id)
-        cursor.execute(sql)
-        result = cursor.fetchall()
+        result = execute_select_all(con, sql)
         result2 = [list(row) for row in result]
         for row in result2:
             row.append(dic1[row[0]])
@@ -218,26 +225,20 @@ def get_creditor_debtor_list(con, group_id=None):
 
 
 def get_balance(con, creditor, debtor):
-    cursor = con.cursor()
     sql = "select amount from  balance where creditor ='{0}' and debtor='{1}'".format(creditor, debtor)
-    cursor.execute(sql)
-    result = cursor.fetchone()
+    result = execute_select_one(con, sql)
     return result[0]
 
 
 def append_transaction_message(con, trans_id, message):
     message = LINE_SEPARATOR + message
-    cursor = con.cursor()
     sql = "update transaction set message=concat(message,'{0}') where id={1}".format(message, trans_id)
-    cursor.execute(sql)
-    con.commit()
+    execute_non_query(con, sql)
 
 
 def is_user_exist(con, user_name):
-    cursor = con.cursor()
     sql = "select username from users WHERE username='{0}'".format(user_name)
-    cursor.execute(sql)
-    result = cursor.fetchone()
+    result = execute_select_one(con, sql)
     if result == None:
         return False
     else:
@@ -245,53 +246,42 @@ def is_user_exist(con, user_name):
 
 
 def add_user(con, user_name, password, screen_name):
-    cursor = con.cursor()
     pw_hash = generate_password_hash(password)
     sql = "insert into users (username,password,screen_name,type) values ('{0}','{1}','{2}','normal')".format(user_name,
                                                                                                               pw_hash,
                                                                                                               screen_name)
-    cursor.execute(sql)
-    con.commit()
+    execute_non_query(con, sql)
     # add_newuser_balance(con, user_name)
 
 
 def add_newuser_balance(con, group_id, user_name):
-    cursor = con.cursor()
     sql = "select username from users WHERE type='normal' and username!='{0}'and group_id={1}".format(user_name,
                                                                                                       group_id)
-    cursor.execute(sql)
-    result = cursor.fetchall()
+    result = execute_select_all(con, sql)
     for row in result:
         sql1 = "insert into balance VALUES ('{0}','{1}',0)".format(user_name, row[0])
         sql2 = "insert into balance VALUES ('{0}','{1}',0)".format(row[0], user_name)
-        cursor.execute(sql1)
-        cursor.execute(sql2)
-    con.commit()
+        execute_non_query(con, sql1)
+        execute_non_query(con, sql2)
 
 
 def get_screen_name(con, username):
-    cursor = con.cursor()
     sql = "select screen_name from {0} where username='{1}'".format(USER_TABLE, username)
-    cursor.execute(sql)
-    result = cursor.fetchone()
+    result = execute_select_one(con, sql)
     name = result[0]
     return name
 
 
 def change_screen_name(con, username, newscreenname):
-    cursor = con.cursor()
     es_newscreenname = re.escape(newscreenname)
     sql = "update users set screen_name='{0}' where username='{1}'".format(es_newscreenname, username)
-    cursor.execute(sql)
-    con.commit()
+    execute_non_query(con, sql)
 
 
 def change_password(con, username, newpassword):
-    cursor = con.cursor()
     pw_hash = generate_password_hash(newpassword)
     sql = "update users set password='{0}' where username='{1}'".format(pw_hash, username)
-    cursor.execute(sql)
-    con.commit()
+    execute_non_query(con, sql)
 
 
 def generate_password_hash(plaintext):
@@ -302,21 +292,18 @@ def generate_password_hash(plaintext):
 
 
 def create_group(con, group_name, holder):
-    cursor = con.cursor()
     es_group_name = re.escape(group_name)
     sql = "insert into groups (name,holder) values ('{0}','{1}')".format(es_group_name, holder)
-    cursor.execute(sql)
+    execute_non_query(con, sql)
     group_id = get_group_id(con, es_group_name)
     update_user_group(con, holder, group_id)
     return group_id
 
 
 def get_group_id(con, name):
-    cursor = con.cursor()
     es_name = re.escape(name)
     sql = "select id from groups where name='{0}'".format(es_name)
-    cursor.execute(sql)
-    group_id = cursor.fetchone()
+    group_id = execute_select_one(con, sql)
     return group_id[0]
 
 
@@ -324,7 +311,6 @@ def join_group(con, groupname, username):
     group_id = get_group_id(con, groupname)
     update_user_group(con, username, group_id)
     add_newuser_balance(con, group_id, username)
-    con.commit()
 
 
 def leave_group(con, username):
@@ -333,42 +319,32 @@ def leave_group(con, username):
 
 
 def delete_balance(con, username):
-    cursor = con.cursor()
     sql = "delete from balance where creditor='{0}' or debtor='{0}'".format(username)
-    cursor.execute(sql)
-    con.commit()
+    execute_non_query(con, sql)
 
 
 def delete_group(con, username, group_id):
-    cursor = con.cursor()
-    sql1 = "delete from groups where id={0}".format(group_id)
-    cursor.execute(sql1)
+    sql = "delete from groups where id={0}".format(group_id)
+    execute_non_query(con, sql)
     update_user_group(con, username, 0)
-    con.commit()
 
 
 def get_holder(con, group_id):
-    cursor = con.cursor()
-    sql0 = "select holder from groups where id={0}".format(group_id)
-    cursor.execute(sql0)
-    result = cursor.fetchone()
+    sql = "select holder from groups where id={0}".format(group_id)
+    result = execute_select_one(con, sql)
     return result[0]
 
 
 def get_group_size(con, group_id):
-    cursor = con.cursor()
     sql = "select count(*) from users where group_id={0}".format(group_id)
-    cursor.execute(sql)
-    size = cursor.fetchone()
+    size = execute_select_one(con, sql)
     return size[0]
 
 
 def is_groupname_exist(con, group_name):
-    cursor = con.cursor()
     es_group_name = re.escape(group_name)
     sql = "select name from groups WHERE name='{0}'".format(es_group_name)
-    cursor.execute(sql)
-    result = cursor.fetchone()
+    result = execute_select_one(con, sql)
     if result == None:
         return False
     else:
@@ -376,10 +352,8 @@ def is_groupname_exist(con, group_name):
 
 
 def check_balance(con, username):
-    cursor = con.cursor()
     sql = "select sum(amount) from balance WHERE debtor='{0}' or creditor='{0}'".format(username)
-    cursor.execute(sql)
-    result = cursor.fetchone()
+    result = execute_select_one(con, sql)
     return result[0]
 
 
@@ -389,10 +363,13 @@ def get_now_time():
 
 
 def update_user_group(con, username, new_groupid):
-    cursor = con.cursor()
     sql = "update users set group_id={0} where username='{1}'".format(new_groupid, username)
-    cursor.execute(sql)
-    con.commit()
+    execute_non_query(con, sql)
+
+
+def delete_user(con, username):
+    sql = "delete from {0} where username='{1}'".format(USER_TABLE, username)
+    execute_non_query(con, sql)
 
 
 if __name__ == "__main__":
