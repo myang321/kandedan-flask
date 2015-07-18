@@ -38,7 +38,7 @@ def login():
         return render_template('login.html')
 
 
-@app.route('/main/')
+@app.route('/main')
 def main():
     if not session.get('name'):
         return redirect(url_for('login'))
@@ -53,7 +53,7 @@ def main():
 
 
 # add transaction
-@app.route('/add/', methods=['GET', 'POST'])
+@app.route('/add', methods=['GET', 'POST'])
 def add():
     now = db.get_now_time()
     now = now.strftime("%Y-%m-%d")
@@ -79,13 +79,13 @@ def add():
         return render_template('add.html', dic=dic, now=now)
 
 
-@app.route('/logout/')
+@app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
 
 
-@app.route('/pay/', methods=['GET', 'POST'])
+@app.route('/pay', methods=['GET', 'POST'])
 def pay():
     if not session.get('name'):
         return redirect(url_for('login'))
@@ -125,7 +125,7 @@ def signup():
         return render_template('signUp.html')
 
 
-@app.route('/setting/', methods=['GET', 'POST'])
+@app.route('/setting', methods=['GET', 'POST'])
 def setting():
     if not session.get('name'):
         return redirect(url_for('login'))
@@ -135,7 +135,7 @@ def setting():
         return render_template('setting.html')
 
 
-@app.route('/setting/change_screenname/', methods=['GET', 'POST'])
+@app.route('/setting/change_screenname', methods=['GET', 'POST'])
 def setting_change_screenname():
     if not session.get('name'):
         return redirect(url_for('login'))
@@ -150,7 +150,7 @@ def setting_change_screenname():
         return render_template('setting_change_screenname.html')
 
 
-@app.route('/setting/change_password/', methods=['GET', 'POST'])
+@app.route('/setting/change_password', methods=['GET', 'POST'])
 def setting_change_password():
     if not session.get('name'):
         return redirect(url_for('login'))
@@ -168,7 +168,7 @@ def setting_change_password():
         return render_template('setting_change_password.html')
 
 
-@app.route('/setting/create_group/', methods=['GET', 'POST'])
+@app.route('/setting/create_group', methods=['GET', 'POST'])
 def create_group():
     if not session.get('name'):
         return redirect(url_for('login'))
@@ -185,7 +185,7 @@ def create_group():
         return render_template("create_group.html")
 
 
-@app.route('/setting/join_group/', methods=['GET', 'POST'])
+@app.route('/setting/join_group', methods=['GET', 'POST'])
 def join_group():
     if not session.get('name'):
         return redirect(url_for('login'))
@@ -203,7 +203,7 @@ def join_group():
         return render_template("join_group.html")
 
 
-@app.route('/setting/leave_group/', methods=['GET', 'POST'])
+@app.route('/setting/leave_group', methods=['GET', 'POST'])
 def leave_group():
     if not session.get('name'):
         return redirect(url_for('login'))
@@ -224,14 +224,14 @@ def leave_group():
         return render_template("leave_group.html", message=message)
 
 
-@app.route('/setting/delete_group/', methods=['GET', 'POST'])
+@app.route('/setting/delete_group', methods=['GET', 'POST'])
 def delete_group():
     if not session.get('name'):
         return redirect(url_for('login'))
     if request.method == 'POST':
         groupid = session.get('group_id')
         username = session.get('name')
-        db.delete_group(g.db, username, groupid)
+        db.delete_group(g.db, username=username, group_id=groupid)
         session['group_id'] = 0
         message = "you have already delete this group"
         return render_template("delete_group.html", message=message)

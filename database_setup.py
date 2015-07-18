@@ -21,6 +21,7 @@ TRANSACTION_TABLE = "transaction"
 BALANCE_TABLE = "balance"
 TRANS_DETAIL_TABLE = "trans_detail"
 USER_TABLE = "users"
+GROUPS_TABLE = 'groups'
 LINE_SEPARATOR = "----"
 
 
@@ -293,7 +294,7 @@ def generate_password_hash(plaintext):
 
 def create_group(con, group_name, holder):
     es_group_name = re.escape(group_name)
-    sql = "insert into groups (name,holder) values ('{0}','{1}')".format(es_group_name, holder)
+    sql = "insert into {2} (name,holder) values ('{0}','{1}')".format(es_group_name, holder, GROUPS_TABLE)
     execute_non_query(con, sql)
     group_id = get_group_id(con, es_group_name)
     update_user_group(con, holder, group_id)
@@ -302,7 +303,7 @@ def create_group(con, group_name, holder):
 
 def get_group_id(con, name):
     es_name = re.escape(name)
-    sql = "select id from groups where name='{0}'".format(es_name)
+    sql = "select id from {1} where name='{0}'".format(es_name, GROUPS_TABLE)
     group_id = execute_select_one(con, sql)
     return group_id[0]
 
@@ -323,14 +324,17 @@ def delete_balance(con, username):
     execute_non_query(con, sql)
 
 
-def delete_group(con, username, group_id):
-    sql = "delete from groups where id={0}".format(group_id)
+def delete_group(con, username, group_id=None, group_name=None):
+    if group_id != None:
+        sql = "delete from {1} where id={0}".format(group_id, GROUPS_TABLE)
+    else:
+        sql = "delete from {1} where name='{0}'".format(group_name, GROUPS_TABLE)
     execute_non_query(con, sql)
     update_user_group(con, username, 0)
 
 
 def get_holder(con, group_id):
-    sql = "select holder from groups where id={0}".format(group_id)
+    sql = "select holder from {1} where id={0}".format(group_id, GROUPS_TABLE)
     result = execute_select_one(con, sql)
     return result[0]
 
@@ -343,7 +347,7 @@ def get_group_size(con, group_id):
 
 def is_groupname_exist(con, group_name):
     es_group_name = re.escape(group_name)
-    sql = "select name from groups WHERE name='{0}'".format(es_group_name)
+    sql = "select name from {1} WHERE name='{0}'".format(es_group_name, GROUPS_TABLE)
     result = execute_select_one(con, sql)
     if result == None:
         return False
