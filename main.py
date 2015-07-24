@@ -179,7 +179,7 @@ def create_group():
             session['group_id'] = db.create_group(g.db, group_name, holder)
             message = "group create successfully"
         else:
-            message = "group_name has been used"
+            message = "group name has been used"
         return render_template("create_group.html", message=message)
     else:
         return render_template("create_group.html")
@@ -197,7 +197,7 @@ def join_group():
             session['group_id'] = db.get_group_id(g.db, group_name)
             message = "join group successfully"
         else:
-            message = "group_name does not exist"
+            message = "group name does not exist"
         return render_template("join_group.html", message=message)
     else:
         return render_template("join_group.html")
@@ -254,4 +254,3 @@ def page_not_found(e):
 
 if __name__ == '__main__':
     app.run()
-
