@@ -1,6 +1,6 @@
 {% extends "base2.html" %}
 {% block head %}
-    <link rel=stylesheet type=text/css href="{{ url_for('static',filename='css/signup_style.css') }}">
+    <link rel=stylesheet type=text/css href="/static/css/signup_style.css">
 {% endblock %}
 {% block body %}
     <!--
@@ -34,7 +34,7 @@
 
             <input type="submit" value="Register">
 
-            <a href="{{ url_for('login') }}" ><input class="cancel" type="button" value="Cancel"> </a>
+            <a href="{{ url_for('login') }}"><input class="cancel" type="button" value="Cancel"> </a>
 
 
         </form>
@@ -42,5 +42,5 @@
 {% endblock %}
 
 {% block script %}
-    <script src={{ url_for('static', filename='js/signup.js') }}></script>
+    <script src="/static/js/signup.js"></script>
 {% endblock %}

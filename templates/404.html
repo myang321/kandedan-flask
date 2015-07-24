@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block head %}
-    <link rel=stylesheet type=text/css media="all" href="{{ url_for('static', filename='css/404-style.css') }}">
+    <link rel=stylesheet type=text/css media="all" href="/static/css/404-style.css">
 {% endblock %}
 {% block body %}
     <!--start-wrap--->
@@ -14,7 +14,7 @@
         <!---End-header---->
         <!--start-content------>
         <div class="content">
-            <img src={{ url_for('static', filename='img/error-img.png') }} title="error"/>
+            <img src={"/static/img/error-img.png" title="error"/>
 
             <p><span><label>O</label>hh.....</span>You Requested the page that is no longer There.</p>
             <a href="/">Back To Home</a>
