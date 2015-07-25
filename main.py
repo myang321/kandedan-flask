@@ -247,6 +247,24 @@ def delete_group():
         return render_template("delete_group.html", message=message)
 
 
+@app.route('/admin', methods=['GET'])
+def admin():
+    group_name = request.args.get('group_name')
+    if group_name is None:
+        rows = None
+    else:
+        group_id = db.get_group_id(g.db, group_name)
+        rows = db.get_all_transaction(g.db, group_id)
+    return render_template('admin.html', is_admin=True, rows=rows)
+
+
+@app.route('/cancel_transaction', methods=['POST'])
+def cancel_transaction():
+    trans_id = request.form.get('trans_id')
+    db.cancel_transaction(g.db, trans_id)
+    return redirect(url_for('admin'))
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404

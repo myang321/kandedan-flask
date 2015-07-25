@@ -3,65 +3,40 @@
     <!-- Bootstrap Core CSS -->
 
     <!-- Custom CSS -->
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='main_style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/scrolling-nav.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}">
+    <link rel=stylesheet type=text/css href="/static/main_style.css">
+    <link rel="stylesheet" href="/static/css/scrolling-nav.css">
+    <link rel="stylesheet" href="/static/css/table.css">
 {% endblock %}
 {% block body %}
-        <div class="wrap">
-            <div class="fleft">
-                <table cellspacing='0'>
-                    <tr>
-                        <th>Name</th>
-                        <th>Date</th>
-                        <th>Message</th>
-                        <th>Amount</th>
-                    </tr>
-                    {% for row in rows %}
-                        {% if row[2]=='buy' %}
-                            <tr class="odd">
-                                {% else %}
-                            <tr class="even">
-                        {% endif %}
+    <div class="wrap">
+        <div class="fleft">
 
-                    <td>{{ row[6] }}</td>
-                    <td>{{ row[5] }}</td>
-                    <td>
-                        {% for i in row[3].split('----') %}
-                            {{ i }}<br>
-                        {% endfor %}
-                    </td>
-                    <td>${{ row[4] }}</td>
-                    </tr>
+            {% include 'transaction_list.html' %}
 
-                    {% endfor %}
-                </table>
-
-
-            </div>
-            <div class="fright">
-                {% if list!=None %}
-                    {% for item in list %}
-                        <div id="people">
-                            <h2>{{ item[2] }}</h2>
-                            {% for j in item[1] %}
-                                <div>欠{{ j[2] }} ${{ j[1] }}
-                                    {% if j[1]>0 and session.get('name')==item[0] %}
-                                        <a href={{ url_for('pay',pay_to=j[0]) }}>
-                                            <button>pay</button>
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-                {% else %}
-                    <h2>{{ not_in_group_msg }}</h2>
-                {% endif %}
-            </div>
         </div>
+        <div class="fright">
+            {% if list!=None %}
+                {% for item in list %}
+                    <div id="people">
+                        <h2>{{ item[2] }}</h2>
+                        {% for j in item[1] %}
+                            <div>欠{{ j[2] }} ${{ j[1] }}
+                                {% if j[1]>0 and session.get('name')==item[0] %}
+                                    <a href={{ url_for('pay',pay_to=j[0]) }}>
+                                        <button>pay</button>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h2>{{ not_in_group_msg }}</h2>
+            {% endif %}
+        </div>
+    </div>
     <!-- jQuery -->
 {% endblock %}
 {% block script %}
-    <script src={{ url_for('static', filename='js/scrolling-nav.js') }}></script>
+    <script src="/static/js/scrolling-nav.js"></script>
 {% endblock %}

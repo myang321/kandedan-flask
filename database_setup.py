@@ -23,6 +23,9 @@ TRANS_DETAIL_TABLE = "trans_detail"
 USER_TABLE = "users"
 GROUPS_TABLE = 'groups'
 LINE_SEPARATOR = "----"
+TRANS_TYPE_BUY = 'buy'
+TRANS_TYPE_PAY = 'pay'
+TRANS_TYPE_BUY_CANCELLED = 'buy_cancelled'
 
 
 class Transaction:
@@ -35,7 +38,7 @@ class Transaction:
         self.who = who
         self.type = type1
         self.ts = get_timestamp()
-        if type1 == 'buy':
+        if type1 == TRANS_TYPE_BUY:
             sum1 = 0
             cnt = 0
             str1 = LINE_SEPARATOR + " shared with "
@@ -92,7 +95,7 @@ def get_timestamp():
 
 
 def get_all_transaction(con, group_id=None, username=None):
-    if group_id == None:
+    if group_id is None:
         sql = "select * from {0} order by id desc".format(TRANSACTION_TABLE)
     elif group_id == 0:
         sql = "select * from {0} where username='{1}' order by id desc".format(TRANSACTION_TABLE, username)
@@ -115,20 +118,16 @@ def save_transaction(con, trans, username):
                                                                                                trans.amount,
                                                                                                trans.date)
     execute_non_query(con, sql)
-    if trans.type == 'buy':
+    if trans.type == TRANS_TYPE_BUY:
         for u in trans.who:
             debtor = u[0]
             cnt = u[1]
             indi_amount = trans.amount_per_unit * cnt
-            sql = "insert into trans_detail ( trans_id,debtor,amount) values({0},'{1}',{2})".format(trans.ts,
-                                                                                                    debtor,
-                                                                                                    indi_amount)
-            execute_non_query(con, sql)
-            con.commit()
+            add_trans_detail(con, trans.ts, debtor, indi_amount)
             if debtor == username:
                 continue
             change_balance(con, debtor, username, indi_amount, trans.ts)
-    elif trans.type == 'pay':
+    elif trans.type == TRANS_TYPE_PAY:
         change_balance(con, trans.who, username, trans.amount, trans.ts)
     print "transaction saved"
 
@@ -374,6 +373,38 @@ def update_user_group(con, username, new_groupid):
 def delete_user(con, username):
     sql = "delete from {0} where username='{1}'".format(USER_TABLE, username)
     execute_non_query(con, sql)
+
+
+def add_trans_detail(con, ts, debtor, indi_amount):
+    sql = "insert into trans_detail ( trans_id,debtor,amount) values({0},'{1}',{2})".format(ts, debtor, indi_amount)
+    execute_non_query(con, sql)
+
+
+def get_trans_owner(con, trans_id):
+    sql = "select username from {0} where id={1}".format(TRANSACTION_TABLE, trans_id)
+    result = execute_select_one(con, sql)
+    return result[0]
+
+
+def get_trans_detail_list(con, trans_id, owner):
+    sql = "select debtor,amount from {0} where trans_id={1} and debtor!='{2}'".format(TRANS_DETAIL_TABLE, trans_id,
+                                                                                      owner)
+    result = execute_select_all(con, sql)
+    lists = [list(row) for row in result]
+    return lists
+
+
+def update_trans_type(con, trans_id, trans_type):
+    sql = "update {0} set type='{1}' where id={2}".format(TRANSACTION_TABLE, trans_type, trans_id)
+    execute_non_query(con, sql)
+
+
+def cancel_transaction(con, trans_id):
+    owner = get_trans_owner(con, trans_id)
+    debtor_list = get_trans_detail_list(con, trans_id, owner)
+    for d in debtor_list:
+        change_balance(con, owner, d[0], d[1], trans_id)
+    update_trans_type(con, trans_id, TRANS_TYPE_BUY_CANCELLED)
 
 
 if __name__ == "__main__":

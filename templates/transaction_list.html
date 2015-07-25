@@ -1,0 +1,36 @@
+<table cellspacing='0'>
+    <tr>
+        <th>Name</th>
+        <th>Date</th>
+        <th>Message</th>
+        <th>Amount</th>
+    </tr>
+    {% for row in rows %}
+        {% if row[2]=='buy' %}
+            <tr class="odd">
+                {% else %}
+            <tr class="even">
+        {% endif %}
+
+    <td>{{ row[6] }}</td>
+    <td>{{ row[5] }}</td>
+    <td>
+        {% for i in row[3].split('----') %}
+            {{ i }}<br>
+        {% endfor %}
+    </td>
+    <td>${{ row[4] }}</td>
+    {% if is_admin %}
+        <td>
+            {% if row[2]!='buy_cancelled' %}
+                <form action={{ url_for('cancel_transaction') }} method="post">
+                    <input type="hidden" name="trans_id" value="{{ row[0] }}">
+                    <button>Cancel</button>
+                </form>
+            {% endif %}
+        </td>
+    {% endif %}
+    </tr>
+
+    {% endfor %}
+</table>
