@@ -171,8 +171,8 @@ def user_authentication(con, username, password):
     pw_hash = generate_password_hash(password)
     es_username = re.escape(username)
     # underscore will cause problem for username
-    sql = "select screen_name,group_id from users where username='{0}' and password='{1}' ".format(es_username,
-                                                                                                   pw_hash)
+    sql = "select screen_name,group_id,type from users where username='{0}' and password='{1}' ".format(es_username,
+                                                                                                        pw_hash)
     result = execute_select_one(con, sql)
     return result
 
@@ -239,7 +239,7 @@ def append_transaction_message(con, trans_id, message):
 def is_user_exist(con, user_name):
     sql = "select username from users WHERE username='{0}'".format(user_name)
     result = execute_select_one(con, sql)
-    if result == None:
+    if result is None:
         return False
     else:
         return True
@@ -304,7 +304,9 @@ def get_group_id(con, name):
     es_name = re.escape(name)
     sql = "select id from {1} where name='{0}'".format(es_name, GROUPS_TABLE)
     group_id = execute_select_one(con, sql)
-    return group_id[0]
+    if group_id:
+        return group_id[0]
+    return None
 
 
 def join_group(con, groupname, username):
@@ -405,6 +407,13 @@ def cancel_transaction(con, trans_id):
     for d in debtor_list:
         change_balance(con, owner, d[0], d[1], trans_id)
     update_trans_type(con, trans_id, TRANS_TYPE_BUY_CANCELLED)
+
+
+def get_all_groups(con):
+    sql = "select name from {0}".format(GROUPS_TABLE)
+    result = execute_select_all(con, sql)
+    list = [row[0] for row in result]
+    return list
 
 
 if __name__ == "__main__":

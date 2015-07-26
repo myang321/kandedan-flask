@@ -6,31 +6,40 @@
         <th>Amount</th>
     </tr>
     {% for row in rows %}
-        {% if row[2]=='buy' %}
-            <tr class="odd">
-                {% else %}
-            <tr class="even">
-        {% endif %}
-
-    <td>{{ row[6] }}</td>
-    <td>{{ row[5] }}</td>
-    <td>
-        {% for i in row[3].split('----') %}
-            {{ i }}<br>
-        {% endfor %}
-    </td>
-    <td>${{ row[4] }}</td>
-    {% if is_admin %}
-        <td>
-            {% if row[2]!='buy_cancelled' %}
-                <form action={{ url_for('cancel_transaction') }} method="post">
-                    <input type="hidden" name="trans_id" value="{{ row[0] }}">
-                    <button>Cancel</button>
-                </form>
+        {% if row[2]!='buy_cancelled' or is_admin %}
+            {% if row[2]=='buy' %}
+                <tr class="odd">
+                    {% else %}
+                <tr class="even">
             {% endif %}
-        </td>
-    {% endif %}
-    </tr>
 
+        <td>{{ row[6] }}</td>
+        <td>{{ row[5] }}</td>
+        <td>
+            {% for i in row[3].split('----') %}
+                {{ i }}<br>
+            {% endfor %}
+        </td>
+        <td>${{ row[4] }}</td>
+        {% if is_admin %}
+            <td>
+                {% if row[2]!='buy_cancelled' %}
+                    <form action={{ url_for('cancel_transaction') }} method="post">
+                        <input type="hidden" name="trans_id" value="{{ row[0] }}">
+                        <input type="hidden" name="group_name" value="{{ group_name }}">
+                        <button id="cancel_button">Cancel</button>
+                    </form>
+                {% endif %}
+            </td>
+        {% endif %}
+        </tr>
+        {% endif %}
     {% endfor %}
 </table>
+<script>
+    $(document).ready(function () {
+        $("#cancel_button").click(function () {
+            return confirm('Are you sure to cancel this?');
+        });
+    });
+</script>

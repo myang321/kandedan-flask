@@ -7,12 +7,15 @@
 
 
 {% block body %}
-    {% if rows %}
-        {% include 'transaction_list.html' %}
-    {% else %}
-        <form action={{ url_for('admin') }} method="get">
-            <input type="text" placeholder="group name" name="group_name">
-            <input type="submit">
-        </form>
-    {% endif %}
+
+    <form action={{ url_for('admin') }} method="get">
+        <input type="text" placeholder="group name" name="group_name">
+        <input type="submit" value="go to the group">
+    </form>
+    <h2>All Groups</h2>
+    {% for g in groups %}
+        <div>
+            <a href="{{ url_for('admin_group',group_name=g) }}">{{ g }}</a>
+        </div>
+    {% endfor %}
 {% endblock %}

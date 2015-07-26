@@ -5,6 +5,14 @@ app = Flask(__name__)
 app.debug = True
 app.secret_key = 'F12Zr47j3yXR~X@H!jmM]Lwf/,?KT'
 
+SESSION_NAME = 'name'
+SESSION_SCREEN_NAME = 'screen_name'
+SESSION_GROUP_ID = 'group_id'
+SESSION_USER_TYPE = 'user_type'
+
+USER_TYPE_SUPER = 'super'
+USER_TYPE_NORMAL = 'normal'
+
 
 @app.before_request
 def before_request():
@@ -19,16 +27,17 @@ def teardown_request(exception):
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
-    if session.get('name'):
+    if session.get(SESSION_NAME):
         return redirect(url_for('main'))
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         result = db.user_authentication(g.db, username, password)
-        if result != None:
-            session['name'] = username
-            session['screen_name'] = result[0]
-            session['group_id'] = result[1]
+        if result is not None:
+            session[SESSION_NAME] = username
+            session[SESSION_SCREEN_NAME] = result[0]
+            session[SESSION_GROUP_ID] = result[1]
+            session[SESSION_USER_TYPE] = result[2]
             return redirect(url_for('main'))
         else:
             flash("username or password not correct")
@@ -40,13 +49,13 @@ def login():
 
 @app.route('/main')
 def main():
-    if not session.get('name'):
+    if not session.get(SESSION_NAME):
         return redirect(url_for('login'))
-    rows1 = db.get_all_transaction(g.db, session.get('group_id'), session.get('name'))
+    rows1 = db.get_all_transaction(g.db, session.get(SESSION_GROUP_ID), session.get(SESSION_NAME))
     list1 = None
     not_in_group_msg = None
-    if session['group_id'] != 0:
-        list1 = db.get_creditor_debtor_list(g.db, session['group_id'])
+    if session[SESSION_GROUP_ID] != 0:
+        list1 = db.get_creditor_debtor_list(g.db, session[SESSION_GROUP_ID])
     else:
         not_in_group_msg = "You are not in any group, please create or join a group in Setting page."
     return render_template('main.html', rows=rows1, list=list1, not_in_group_msg=not_in_group_msg)
@@ -57,7 +66,7 @@ def main():
 def add():
     now = db.get_now_time()
     now = now.strftime("%Y-%m-%d")
-    if not session.get('name'):
+    if not session.get(SESSION_NAME):
         return redirect(url_for('login'))
     if request.method == 'POST':
         amount = float(request.form['amount'])
@@ -65,14 +74,14 @@ def add():
         msg = request.form['msg']
         who = request.form.getlist('who')
         who_tuple_list = []
-        dic1 = db.get_all_normal_user_info(g.db, session.get('group_id'), session.get('name'))
+        dic1 = db.get_all_normal_user_info(g.db, session.get(SESSION_GROUP_ID), session.get(SESSION_NAME))
         print "add", dic1
         for u in who:
             cnt = int(request.form['cnt' + u])
             tuple1 = (u, cnt, dic1[u])
             who_tuple_list.append(tuple1)
-        trans = db.Transaction(session['name'], amount, date, msg, who_tuple_list, "buy")
-        db.save_transaction(g.db, trans, session.get('name'))
+        trans = db.Transaction(session[SESSION_NAME], amount, date, msg, who_tuple_list, "buy")
+        db.save_transaction(g.db, trans, session.get(SESSION_NAME))
         return redirect(url_for('main'))
     else:
         dic = db.get_all_normal_user_info(g.db, session.get('group_id'), session.get('name'))
@@ -87,7 +96,7 @@ def logout():
 
 @app.route('/pay', methods=['GET', 'POST'])
 def pay():
-    if not session.get('name'):
+    if not session.get(SESSION_NAME):
         return redirect(url_for('login'))
     if request.method == 'POST':
         try:
@@ -96,13 +105,13 @@ def pay():
             return redirect(url_for('main'))
         pay_to = request.form['pay_to']
         now = db.get_now_time()
-        trans = db.Transaction(session['name'], amount=pay_value, date=str(now), message="", who=pay_to,
+        trans = db.Transaction(session[SESSION_NAME], amount=pay_value, date=str(now), message="", who=pay_to,
                                type1="pay")
-        db.save_transaction(g.db, trans, session.get('name'))
+        db.save_transaction(g.db, trans, session.get(SESSION_NAME))
         return redirect(url_for('main'))
     else:
         pay_to = request.args.get('pay_to')
-        amount = db.get_balance(g.db, pay_to, session.get('name'))
+        amount = db.get_balance(g.db, pay_to, session.get(SESSION_NAME))
         pay_to_name = db.get_screen_name(g.db, pay_to)
         return render_template('pay.html', pay_to=pay_to, amount=amount, pay_to_name=pay_to_name)
 
@@ -113,7 +122,7 @@ def signup():
         username = request.form['username']
         password = request.form['password']
         screen_name = request.form['screenname']
-        if db.is_user_exist(g.db, username) == True:
+        if db.is_user_exist(g.db, username):
             flash("this user name has been used")
             return render_template('signUp.html')
 
@@ -127,7 +136,7 @@ def signup():
 
 @app.route('/setting', methods=['GET', 'POST'])
 def setting():
-    if not session.get('name'):
+    if not session.get(SESSION_NAME):
         return redirect(url_for('login'))
     if request.method == 'POST':
         pass
@@ -143,7 +152,7 @@ def setting_change_screenname():
         username = session.get('name')
         newscreenname = request.form['screenname']
         db.change_screen_name(g.db, username, newscreenname)
-        session["screen_name"] = newscreenname
+        session[SESSION_SCREEN_NAME] = newscreenname
         flash("screen name change successfully")
         return render_template("setting_change_screenname.html")
     else:
@@ -152,10 +161,10 @@ def setting_change_screenname():
 
 @app.route('/setting/change_password', methods=['GET', 'POST'])
 def setting_change_password():
-    if not session.get('name'):
+    if not session.get(SESSION_NAME):
         return redirect(url_for('login'))
     if request.method == 'POST':
-        username = session.get('name')
+        username = session.get(SESSION_NAME)
         old_password = request.form['old_password']
         new_password = request.form['new_password']
         if db.user_authentication(g.db, username, old_password):
@@ -170,13 +179,13 @@ def setting_change_password():
 
 @app.route('/setting/create_group', methods=['GET', 'POST'])
 def create_group():
-    if not session.get('name'):
+    if not session.get(SESSION_NAME):
         return redirect(url_for('login'))
     if request.method == 'POST':
-        holder = session.get('name')
+        holder = session.get(SESSION_NAME)
         group_name = request.form['group_name']
         if not db.is_groupname_exist(g.db, group_name):
-            session['group_id'] = db.create_group(g.db, group_name, holder)
+            session[SESSION_GROUP_ID] = db.create_group(g.db, group_name, holder)
             message = "group create successfully"
         else:
             message = "group name has been used"
@@ -187,14 +196,14 @@ def create_group():
 
 @app.route('/setting/join_group', methods=['GET', 'POST'])
 def join_group():
-    if not session.get('name'):
+    if not session.get(SESSION_NAME):
         return redirect(url_for('login'))
     if request.method == 'POST':
-        username = session.get('name')
+        username = session.get(SESSION_NAME)
         group_name = request.form['group_name']
-        if db.is_groupname_exist(g.db, group_name) == True:
+        if db.is_groupname_exist(g.db, group_name):
             db.join_group(g.db, group_name, username)
-            session['group_id'] = db.get_group_id(g.db, group_name)
+            session[SESSION_GROUP_ID] = db.get_group_id(g.db, group_name)
             message = "join group successfully"
         else:
             message = "group name does not exist"
@@ -205,64 +214,80 @@ def join_group():
 
 @app.route('/setting/leave_group', methods=['GET', 'POST'])
 def leave_group():
-    if not session.get('name'):
+    if not session.get(SESSION_NAME):
         return redirect(url_for('login'))
     if request.method == 'POST':
-        username = session.get('name')
+        username = session.get(SESSION_NAME)
         db.leave_group(g.db, username)
-        session['group_id'] = 0
+        session[SESSION_GROUP_ID] = 0
         message = "you have leaved this group"
         return render_template("leave_group.html", message=message)
     else:
         message = None
-        if session.get('group_id') == 0:
+        if session.get(SESSION_GROUP_ID) == 0:
             message = "you don't belong to any group"
-        elif session.get('name') == db.get_holder(g.db, session.get('group_id')):
+        elif session.get(SESSION_NAME) == db.get_holder(g.db, session.get(SESSION_GROUP_ID)):
             message = "you are the holder, you can not leave a group,but you can delete group"
-        elif db.check_balance(g.db, session.get('name')) > 0:
+        elif db.check_balance(g.db, session.get(SESSION_NAME)) > 0:
             message = "your balance is not 0, you cannot leave the group now"
         return render_template("leave_group.html", message=message)
 
 
 @app.route('/setting/delete_group', methods=['GET', 'POST'])
 def delete_group():
-    if not session.get('name'):
+    if not session.get(SESSION_NAME):
         return redirect(url_for('login'))
     if request.method == 'POST':
-        groupid = session.get('group_id')
-        username = session.get('name')
+        groupid = session.get(SESSION_GROUP_ID)
+        username = session.get(SESSION_NAME)
         db.delete_group(g.db, username=username, group_id=groupid)
-        session['group_id'] = 0
+        session[SESSION_GROUP_ID] = 0
         message = "you have already delete this group"
         return render_template("delete_group.html", message=message)
 
     else:
         message = None
-        if session.get('group_id') == 0:
+        if session.get(SESSION_GROUP_ID) == 0:
             message = "you don't belong to any group"
-        elif session.get('name') != db.get_holder(g.db, session.get('group_id')):
+        elif session.get(SESSION_NAME) != db.get_holder(g.db, session.get(SESSION_GROUP_ID)):
             message = "you are not the holder, you can not delete group"
-        elif db.get_group_size(g.db, session.get('group_id')) > 1:
+        elif db.get_group_size(g.db, session.get(SESSION_GROUP_ID)) > 1:
             message = "your group has other people, you can not delete"
         return render_template("delete_group.html", message=message)
 
 
 @app.route('/admin', methods=['GET'])
 def admin():
+    if not session.get(SESSION_NAME) or session.get(SESSION_USER_TYPE) != USER_TYPE_SUPER:
+        return redirect(url_for('login'))
     group_name = request.args.get('group_name')
-    if group_name is None:
-        rows = None
+    if group_name:
+        return redirect(url_for('admin_group', group_name=group_name))
     else:
-        group_id = db.get_group_id(g.db, group_name)
+        groups = db.get_all_groups(g.db)
+        return render_template('admin.html', groups=groups)
+
+
+@app.route('/admin/group/<group_name>', methods=['GET'])
+def admin_group(group_name):
+    if not session.get(SESSION_NAME) or session.get(SESSION_USER_TYPE) != USER_TYPE_SUPER:
+        return redirect(url_for('login'))
+    group_id = db.get_group_id(g.db, group_name)
+    if group_id:
         rows = db.get_all_transaction(g.db, group_id)
-    return render_template('admin.html', is_admin=True, rows=rows)
+        return render_template('admin_group.html', is_admin=True, rows=rows, group_name=group_name)
+    else:
+        return redirect(url_for('admin'))
 
 
 @app.route('/cancel_transaction', methods=['POST'])
 def cancel_transaction():
+    if not session.get(SESSION_NAME):
+        return redirect(url_for('login'))
     trans_id = request.form.get('trans_id')
+    group_name = request.form.get('group_name')
     db.cancel_transaction(g.db, trans_id)
-    return redirect(url_for('admin'))
+    return redirect(url_for('admin_group', group_name=group_name))
 
 
 @app.errorhandler(404)
