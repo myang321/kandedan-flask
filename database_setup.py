@@ -210,11 +210,13 @@ def get_creditor_debtor_list(con, group_id=None):
     list1 = []
     dic1 = get_all_normal_user_info(con, group_id)
     for u in users:
-        if group_id == None:
+        if group_id is None:
             sql = "select creditor,amount from balance where debtor='{0}'".format(u)
         else:
-            sql = "select creditor,amount from balance where debtor='{0}' and creditor in (select username from users where group_id={1})".format(
-                u, group_id)
+            sql = """
+                  select creditor,amount from balance where debtor='{0}' and creditor in
+                  (select username from users where group_id={1})
+                  """.format(u, group_id)
         result = execute_select_all(con, sql)
         result2 = [list(row) for row in result]
         for row in result2:
