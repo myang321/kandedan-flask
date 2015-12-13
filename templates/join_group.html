@@ -4,17 +4,17 @@
 
         <form class="form" method="post" action={{ url_for("join_group") }}>
 
-        please input your group name
+            please input your group name
             <br>
             <br>
-        <input type="text" required  id="group_name" name="group_name" placeholder="group name"
-                                                 autocomplete="off" value="{{ request.form['group_name'] }}">
+            <input type="text" required id="group_name" name="group_name" placeholder="group name"
+                   autocomplete="off" value="{{ request.form['group_name'] }}">
 
-                <input type="submit" value="confirm">
+            <input type="submit" value="confirm">
         </form>
 
     {% else %}
-        <div>you have already in a group</div>
+        <div>you have already in group [{{ session.get('group_name') }}]</div>
     {% endif %}
     <script type="text/javascript">
         {% if message  %}

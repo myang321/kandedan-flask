@@ -9,6 +9,7 @@ SESSION_NAME = 'name'
 SESSION_SCREEN_NAME = 'screen_name'
 SESSION_GROUP_ID = 'group_id'
 SESSION_USER_TYPE = 'user_type'
+SESSION_GROUP_NAME = 'group_name'
 
 USER_TYPE_SUPER = 'super'
 USER_TYPE_NORMAL = 'normal'
@@ -38,6 +39,7 @@ def login():
             session[SESSION_SCREEN_NAME] = result[0]
             session[SESSION_GROUP_ID] = result[1]
             session[SESSION_USER_TYPE] = result[2]
+            session[SESSION_GROUP_NAME] = db.get_group_name(g.db, username)
             return redirect(url_for('main'))
         else:
             flash("username or password not correct")
@@ -186,6 +188,7 @@ def create_group():
         group_name = request.form['group_name']
         if not db.is_groupname_exist(g.db, group_name):
             session[SESSION_GROUP_ID] = db.create_group(g.db, group_name, holder)
+            session[SESSION_GROUP_NAME] = db.get_group_name(g.db, session.get(SESSION_NAME))
             message = "group create successfully"
         else:
             message = "group name has been used"
@@ -204,6 +207,7 @@ def join_group():
         if db.is_groupname_exist(g.db, group_name):
             db.join_group(g.db, group_name, username)
             session[SESSION_GROUP_ID] = db.get_group_id(g.db, group_name)
+            session[SESSION_GROUP_NAME] = db.get_group_name(g.db, session.get(SESSION_NAME))
             message = "join group successfully"
         else:
             message = "group name does not exist"

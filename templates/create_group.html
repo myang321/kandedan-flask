@@ -13,7 +13,7 @@
                 <input type="submit" value="confirm">
         </form>
     {% else %}
-        <div>you have already in a group</div>
+        <div>you have already in group [{{ session.get('group_name') }}]</div>
     {% endif %}
     <script type="text/javascript">
         {% if message  %}

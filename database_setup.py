@@ -303,6 +303,7 @@ def create_group(con, group_name, holder):
 
 
 def get_group_id(con, name):
+    # TODO has problem when use chinese as group name
     es_name = re.escape(name)
     sql = "select id from {1} where name='{0}'".format(es_name, GROUPS_TABLE)
     group_id = execute_select_one(con, sql)
@@ -414,8 +415,19 @@ def cancel_transaction(con, trans_id):
 def get_all_groups(con):
     sql = "select name from {0}".format(GROUPS_TABLE)
     result = execute_select_all(con, sql)
-    list = [row[0] for row in result]
-    return list
+    list1 = [row[0] for row in result]
+    return list1
+
+
+def get_group_name(con, username):
+    sql = "select groups.name from groups, users where groups.id=users.group_id and users.username='{0}'".format(
+        username)
+    result = execute_select_one(con, sql)
+    if result is None:
+        result = ""
+    else:
+        result = result[0]
+    return result
 
 
 if __name__ == "__main__":
