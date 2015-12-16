@@ -1,0 +1,4 @@
+*.pyc
+.idea/
+local.py
+test1.py
