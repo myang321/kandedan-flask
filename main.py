@@ -83,7 +83,7 @@ def add():
             tuple1 = (u, cnt, dic1[u])
             who_tuple_list.append(tuple1)
         trans = db.Transaction(session[SESSION_NAME], amount, date, msg, who_tuple_list, "buy")
-        db.save_transaction(g.db, trans, session.get(SESSION_NAME))
+        db.save_transaction(g.db, trans, session.get(SESSION_NAME), session.get(SESSION_GROUP_ID))
         return redirect(url_for('main'))
     else:
         dic = db.get_all_normal_user_info(g.db, session.get('group_id'), session.get('name'))
@@ -106,10 +106,10 @@ def pay():
         except ValueError:
             return redirect(url_for('main'))
         pay_to = request.form['pay_to']
-        now = db.get_now_time()
-        trans = db.Transaction(session[SESSION_NAME], amount=pay_value, date=str(now), message="", who=pay_to,
+        now = db.get_now_time().strftime("%Y-%m-%d %H:%M")
+        trans = db.Transaction(session[SESSION_NAME], amount=pay_value, date=now, message="", who=pay_to,
                                type1="pay")
-        db.save_transaction(g.db, trans, session.get(SESSION_NAME))
+        db.save_transaction(g.db, trans, session.get(SESSION_NAME), session.get(SESSION_GROUP_ID))
         return redirect(url_for('main'))
     else:
         pay_to = request.args.get('pay_to')

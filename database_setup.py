@@ -96,11 +96,12 @@ def get_timestamp():
 
 def get_all_transaction(con, group_id=None, username=None):
     if group_id is None:
-        sql = "select * from {0} order by id desc".format(TRANSACTION_TABLE)
+        sql = "select id,username,type,message,amount,date from {0} order by id desc".format(TRANSACTION_TABLE)
     elif group_id == 0:
-        sql = "select * from {0} where username='{1}' order by id desc".format(TRANSACTION_TABLE, username)
+        sql = "select id,username,type,message,amount,date from {0} where username='{1}' order by id desc".format(
+            TRANSACTION_TABLE, username)
     else:
-        sql = "select * from {0} where username in (select username from users where group_id={1}) order by id desc".format(
+        sql = "select id,username,type,message,amount,date from {0} where group_id={1} order by id desc".format(
             TRANSACTION_TABLE, group_id)
     rows = execute_select_all(con, sql)
     dic1 = get_all_normal_user_info(con)
@@ -111,12 +112,13 @@ def get_all_transaction(con, group_id=None, username=None):
     return lists
 
 
-def save_transaction(con, trans, username):
-    sql = "insert into transaction values({0} ,  '{1}' , '{2}' , '{3}' ,  {4} , '{5}')".format(trans.ts, username,
-                                                                                               trans.type,
-                                                                                               trans.message,
-                                                                                               trans.amount,
-                                                                                               trans.date)
+def save_transaction(con, trans, username, group_id):
+    sql = "insert into transaction values({0} ,{6},  '{1}' , '{2}' , '{3}' ,  {4} , '{5}')".format(trans.ts, username,
+                                                                                                   trans.type,
+                                                                                                   trans.message,
+                                                                                                   trans.amount,
+                                                                                                   trans.date, group_id)
+    print sql
     execute_non_query(con, sql)
     if trans.type == TRANS_TYPE_BUY:
         for u in trans.who:
