@@ -20,7 +20,7 @@
                     <div id="people">
                         <h2>{{ item[2] }}</h2>
                         {% for j in item[1] %}
-                            <div>欠{{ j[2] }} ${{ j[1] }}
+                            <div>owe {{ j[2] }} ${{ j[1] }}
                                 {% if j[1]>0 and session.get('name')==item[0] %}
                                     <a href={{ url_for('pay',pay_to=j[0]) }}>
                                         <button>pay</button>
