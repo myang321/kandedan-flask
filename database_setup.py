@@ -108,7 +108,11 @@ def get_all_transaction(con, group_id=None, username=None):
     lists = [list(row) for row in rows]
     # append screen name to the result tuple
     for row in lists:
-        row.append(dic1[row[1]])
+        try:
+            user_screen_name = dic1[row[1]]
+        except KeyError:
+            user_screen_name = "error"
+        row.append(user_screen_name)
     return lists
 
 
